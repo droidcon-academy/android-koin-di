@@ -1,3 +1,8 @@
 package com.droidcon.weatherscope.ui.screens.currentweather
 
-data class CurrentWeatherState(val text: String)
+import com.droidcon.weatherscope.ui.common.TextFieldState
+
+data class CurrentWeatherState(
+    val text: String,
+    val cityTextFieldState: TextFieldState = TextFieldState()
+)

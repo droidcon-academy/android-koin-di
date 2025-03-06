@@ -20,9 +20,6 @@ import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -36,7 +33,6 @@ fun CurrentWeatherScreen(
 ) {
     val state by viewModel.screenState.collectAsState()
     val screenState = state
-    var city by remember { mutableStateOf("") }
 
     Column(
         modifier = Modifier
@@ -60,6 +56,42 @@ fun CurrentWeatherScreen(
                         Text(text = weatherState.text)
                     }
                 }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Button(
+                    onClick = { /* TODO: Trigger GPS lookup and call viewModel.loadWeather(...) with coordinates */ },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Use Current GPS")
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    TextField(
+                        value = weatherState.cityTextFieldState.value,
+                        onValueChange = { },
+                        label = { Text("Enter City") },
+                        modifier = Modifier.weight(1f)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Button(onClick = { }) {
+                        Text("Search")
+                    }
+                }
+                Spacer(modifier = Modifier.weight(2f))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    Button(onClick = onNavigateToForecast) {
+                        Text("Forecast")
+                    }
+                    Button(onClick = onNavigateToSettings) {
+                        Text("Settings")
+                    }
+                }
             }
 
             is ScreenState.Error -> {
@@ -68,41 +100,6 @@ fun CurrentWeatherScreen(
                     color = MaterialTheme.colorScheme.error,
                     style = MaterialTheme.typography.bodyMedium
                 )
-            }
-        }
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Button(
-            onClick = { /* TODO: Trigger GPS lookup and call viewModel.loadWeather(...) with coordinates */ },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("Use Current GPS")
-        }
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            TextField(
-                value = city,
-                onValueChange = { city = it },
-                label = { Text("Enter City") },
-                modifier = Modifier.weight(1f)
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Button(onClick = { }) {
-                Text("Search")
-            }
-        }
-        Spacer(modifier = Modifier.weight(2f))
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly
-        ) {
-            Button(onClick = onNavigateToForecast) {
-                Text("Forecast")
-            }
-            Button(onClick = onNavigateToSettings) {
-                Text("Settings")
             }
         }
     }
