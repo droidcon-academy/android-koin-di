@@ -24,13 +24,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.droidcon.weatherscope.ui.common.ScreenState
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun CurrentWeatherScreen(
     onNavigateToForecast: () -> Unit,
-    onNavigateToSettings: () -> Unit,
-    viewModel: CurrentWeatherViewModel = CurrentWeatherViewModel()
+    onNavigateToSettings: () -> Unit
 ) {
+    val viewModel: CurrentWeatherViewModel = koinViewModel()
     val state by viewModel.screenState.collectAsState()
     val screenState = state
 

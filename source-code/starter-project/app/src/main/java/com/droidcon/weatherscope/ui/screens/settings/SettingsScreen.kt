@@ -31,6 +31,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.droidcon.weatherscope.R
 import com.droidcon.weatherscope.ui.common.ScreenState
+import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -38,6 +39,7 @@ fun SettingsScreen(
     onBack: () -> Unit,
     viewModel: SettingsViewModel = SettingsViewModel()
 ) {
+    val viewModel: SettingsViewModel = koinViewModel()
     val state by viewModel.screenState.collectAsState()
     val screenState = state
 

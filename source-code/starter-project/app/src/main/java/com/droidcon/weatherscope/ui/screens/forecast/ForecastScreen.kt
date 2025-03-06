@@ -22,13 +22,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.droidcon.weatherscope.R
 import com.droidcon.weatherscope.ui.common.ScreenState
+import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ForecastScreen(
-    onBack: () -> Unit,
-    viewModel: ForecastViewModel = ForecastViewModel()
+    onBack: () -> Unit
 ) {
+    val viewModel: ForecastViewModel = koinViewModel()
     val state by viewModel.screenState.collectAsState()
     val screenState = state
 
