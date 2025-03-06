@@ -35,7 +35,7 @@ private val LightColorScheme = lightColorScheme(
 
 @Composable
 fun WeatherScopeTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
+    darkThemeEnabled: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
     dynamicColor: Boolean = true,
     content: @Composable () -> Unit
@@ -43,10 +43,10 @@ fun WeatherScopeTheme(
     val colorScheme = when {
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+            if (darkThemeEnabled || isSystemInDarkTheme()) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
 
-        darkTheme -> DarkColorScheme
+        darkThemeEnabled || isSystemInDarkTheme() -> DarkColorScheme
         else -> LightColorScheme
     }
 

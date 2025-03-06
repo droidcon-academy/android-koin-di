@@ -14,9 +14,12 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -26,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import com.droidcon.weatherscope.ui.common.ScreenState
 import org.koin.androidx.compose.koinViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CurrentWeatherScreen(
     onNavigateToForecast: () -> Unit,
@@ -35,72 +39,81 @@ fun CurrentWeatherScreen(
     val state by viewModel.screenState.collectAsState()
     val screenState = state
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        when (screenState) {
-            is ScreenState.Loading -> {
-                Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator()
-                }
-            }
-
-            is ScreenState.Success -> {
-                val weatherState = screenState.state
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-                ) {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        Text(text = weatherState.text)
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Weather Scope") },
+            )
+        }
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(16.dp)
+        ) {
+            when (screenState) {
+                is ScreenState.Loading -> {
+                    Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator()
                     }
                 }
 
-                Spacer(modifier = Modifier.height(16.dp))
+                is ScreenState.Success -> {
+                    val weatherState = screenState.state
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                    ) {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Text(text = weatherState.text)
+                        }
+                    }
 
-                Button(
-                    onClick = { /* TODO: Trigger GPS lookup and call viewModel.loadWeather(...) with coordinates */ },
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text("Use Current GPS")
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Button(
+                        onClick = { /* TODO: Trigger GPS lookup and call viewModel.loadWeather(...) with coordinates */ },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text("Use Current GPS")
+                    }
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        TextField(
+                            value = weatherState.cityTextFieldState.value,
+                            onValueChange = { },
+                            label = { Text("Enter City") },
+                            modifier = Modifier.weight(1f)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Button(onClick = { }) {
+                            Text("Search")
+                        }
+                    }
+                    Spacer(modifier = Modifier.weight(2f))
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        Button(onClick = onNavigateToForecast) {
+                            Text("Forecast")
+                        }
+                        Button(onClick = onNavigateToSettings) {
+                            Text("Settings")
+                        }
+                    }
                 }
-                Spacer(modifier = Modifier.height(16.dp))
 
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    TextField(
-                        value = weatherState.cityTextFieldState.value,
-                        onValueChange = { },
-                        label = { Text("Enter City") },
-                        modifier = Modifier.weight(1f)
+                is ScreenState.Error -> {
+                    Text(
+                        text = "Error: ${screenState.message}",
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.bodyMedium
                     )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Button(onClick = { }) {
-                        Text("Search")
-                    }
                 }
-                Spacer(modifier = Modifier.weight(2f))
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly
-                ) {
-                    Button(onClick = onNavigateToForecast) {
-                        Text("Forecast")
-                    }
-                    Button(onClick = onNavigateToSettings) {
-                        Text("Settings")
-                    }
-                }
-            }
-
-            is ScreenState.Error -> {
-                Text(
-                    text = "Error: ${screenState.message}",
-                    color = MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.bodyMedium
-                )
             }
         }
     }

@@ -36,8 +36,7 @@ import org.koin.androidx.compose.koinViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
-    onBack: () -> Unit,
-    viewModel: SettingsViewModel = SettingsViewModel()
+    onBack: () -> Unit
 ) {
     val viewModel: SettingsViewModel = koinViewModel()
     val state by viewModel.screenState.collectAsState()
@@ -81,13 +80,13 @@ fun SettingsScreen(
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         RadioButton(
                             selected = settingsState.temperatureUnit == "Celsius",
-                            onClick = { }
+                            onClick = { viewModel.saveTemperatureUnit("Celsius") }
                         )
                         Text("Celsius")
                         Spacer(modifier = Modifier.width(16.dp))
                         RadioButton(
                             selected = settingsState.temperatureUnit == "Fahrenheit",
-                            onClick = { }
+                            onClick = { viewModel.saveTemperatureUnit("Fahrenheit") }
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text("Fahrenheit")
@@ -101,25 +100,31 @@ fun SettingsScreen(
                         Spacer(modifier = Modifier.width(8.dp))
                         Switch(
                             checked = settingsState.darkThemeEnabled,
-                            onCheckedChange = { }
+                            onCheckedChange = { viewModel.saveThemeSetting(!settingsState.darkThemeEnabled)}
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(if (settingsState.darkThemeEnabled) "Dark Mode" else "Light Mode")
                     }
                     Spacer(modifier = Modifier.height(24.dp))
 
-                    // Dark/Light Mode Toggle Section
+                    // Api Key Section
                     Text("Weather Api Key", style = MaterialTheme.typography.titleMedium)
                     Spacer(modifier = Modifier.height(16.dp))
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         TextField(
-                            value = "",
-                            onValueChange = { },
+                            value = settingsState.apiKeyTextFieldState.value,
+                            onValueChange = { viewModel.onApiKeyChanged(it) },
+                            isError = settingsState.apiKeyTextFieldState.isError,
+                            supportingText = {
+                                Text(text = settingsState.apiKeyTextFieldState.errorMessage ?: "")
+                            },
                             label = { Text("Enter Key") },
                             modifier = Modifier.weight(1f)
                         )
                         Spacer(modifier = Modifier.width(8.dp))
-                        Button(onClick = { }) {
+                        Button(onClick = {
+                            viewModel.saveApiKey()
+                        }) {
                             Text("Set")
                         }
                     }

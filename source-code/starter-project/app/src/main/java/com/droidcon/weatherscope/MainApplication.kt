@@ -1,6 +1,7 @@
 package com.droidcon.weatherscope
 
 import android.app.Application
+import com.droidcon.weatherscope.injection.utilsModule
 import com.droidcon.weatherscope.injection.viewModelModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
@@ -12,7 +13,8 @@ class MainApplication : Application() {
             androidContext(this@MainApplication)
 
             modules(
-                viewModelModule
+                viewModelModule,
+                utilsModule
             )
         }
     }
