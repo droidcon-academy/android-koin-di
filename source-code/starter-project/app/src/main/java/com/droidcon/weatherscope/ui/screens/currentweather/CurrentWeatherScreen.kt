@@ -26,7 +26,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.droidcon.weatherscope.ui.common.ScreenState
+import com.droidcon.weatherscope.ui.common.DataState
 import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -36,7 +36,7 @@ fun CurrentWeatherScreen(
     onNavigateToSettings: () -> Unit
 ) {
     val viewModel: CurrentWeatherViewModel = koinViewModel()
-    val state by viewModel.screenState.collectAsState()
+    val state by viewModel.dataState.collectAsState()
     val screenState = state
 
     Scaffold(
@@ -53,13 +53,13 @@ fun CurrentWeatherScreen(
                 .padding(16.dp)
         ) {
             when (screenState) {
-                is ScreenState.Loading -> {
+                is DataState.Loading -> {
                     Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
                         CircularProgressIndicator()
                     }
                 }
 
-                is ScreenState.Success -> {
+                is DataState.Success -> {
                     val weatherState = screenState.state
                     Card(
                         modifier = Modifier.fillMaxWidth(),
@@ -83,12 +83,16 @@ fun CurrentWeatherScreen(
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         TextField(
                             value = weatherState.cityTextFieldState.value,
-                            onValueChange = { },
+                            onValueChange = { viewModel.onLocationTextValueChanged(it)},
+                            isError = weatherState.cityTextFieldState.isError,
+                            supportingText = {
+                                Text(text = weatherState.cityTextFieldState.errorMessage ?: "")
+                            },
                             label = { Text("Enter City") },
                             modifier = Modifier.weight(1f)
                         )
                         Spacer(modifier = Modifier.width(8.dp))
-                        Button(onClick = { }) {
+                        Button(onClick = { viewModel.setCurrentLocation() }) {
                             Text("Search")
                         }
                     }
@@ -107,7 +111,7 @@ fun CurrentWeatherScreen(
                     }
                 }
 
-                is ScreenState.Error -> {
+                is DataState.Error -> {
                     Text(
                         text = "Error: ${screenState.message}",
                         color = MaterialTheme.colorScheme.error,

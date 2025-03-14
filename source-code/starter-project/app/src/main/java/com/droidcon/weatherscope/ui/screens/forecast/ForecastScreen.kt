@@ -21,7 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.droidcon.weatherscope.R
-import com.droidcon.weatherscope.ui.common.ScreenState
+import com.droidcon.weatherscope.ui.common.DataState
 import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -30,7 +30,7 @@ fun ForecastScreen(
     onBack: () -> Unit
 ) {
     val viewModel: ForecastViewModel = koinViewModel()
-    val state by viewModel.screenState.collectAsState()
+    val state by viewModel.dataState.collectAsState()
     val screenState = state
 
     Scaffold(
@@ -51,17 +51,17 @@ fun ForecastScreen(
     ) { paddingValues ->
         Column(modifier = Modifier.padding(16.dp).padding(paddingValues)) {
             when (screenState) {
-                is ScreenState.Loading -> {
+                is DataState.Loading -> {
                     Box(modifier = Modifier.fillMaxHeight(), contentAlignment = Alignment.Center) {
                         CircularProgressIndicator()
                     }
                 }
 
-                is ScreenState.Success -> {
+                is DataState.Success -> {
                         Text(text = screenState.state.text)
                 }
 
-                is ScreenState.Error -> {
+                is DataState.Error -> {
                     Text(
                         text = "Error: ${screenState.message}",
                         color = MaterialTheme.colorScheme.error,

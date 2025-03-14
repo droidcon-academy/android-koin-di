@@ -30,7 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.droidcon.weatherscope.R
-import com.droidcon.weatherscope.ui.common.ScreenState
+import com.droidcon.weatherscope.ui.common.DataState
 import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -39,7 +39,7 @@ fun SettingsScreen(
     onBack: () -> Unit
 ) {
     val viewModel: SettingsViewModel = koinViewModel()
-    val state by viewModel.screenState.collectAsState()
+    val state by viewModel.dataState.collectAsState()
     val screenState = state
 
     Scaffold(
@@ -65,13 +65,13 @@ fun SettingsScreen(
                 .padding(16.dp)
         ) {
             when (screenState) {
-                is ScreenState.Loading -> {
+                is DataState.Loading -> {
                     Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
                         CircularProgressIndicator()
                     }
                 }
 
-                is ScreenState.Success -> {
+                is DataState.Success -> {
                     val settingsState = screenState.state
 
                     // Temperature Unit Toggle Section
@@ -130,7 +130,7 @@ fun SettingsScreen(
                     }
                 }
 
-                is ScreenState.Error -> {
+                is DataState.Error -> {
                     Text(
                         text = "Error: ${screenState.message}",
                         color = MaterialTheme.colorScheme.error,

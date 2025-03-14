@@ -1,6 +1,9 @@
 package com.droidcon.weatherscope
 
 import android.app.Application
+import com.droidcon.weatherscope.injection.domainModule
+import com.droidcon.weatherscope.injection.networkModule
+import com.droidcon.weatherscope.injection.repositoryModule
 import com.droidcon.weatherscope.injection.utilsModule
 import com.droidcon.weatherscope.injection.viewModelModule
 import org.koin.android.ext.koin.androidContext
@@ -14,7 +17,10 @@ class MainApplication : Application() {
 
             modules(
                 viewModelModule,
-                utilsModule
+                utilsModule,
+                networkModule,
+                domainModule,
+                repositoryModule
             )
         }
     }

@@ -2,7 +2,7 @@ package com.droidcon.weatherscope.ui.screens.settings
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.droidcon.weatherscope.ui.common.ScreenState
+import com.droidcon.weatherscope.ui.common.DataState
 import com.droidcon.weatherscope.ui.common.TextFieldState
 import com.droidcon.weatherscope.utils.AppPreferences
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -11,9 +11,9 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
-class SettingsViewModel(val appPreferences: AppPreferences) : ViewModel() {
-    private val _screenState = MutableStateFlow<ScreenState<SettingsState>>(ScreenState.Loading)
-    val screenState: StateFlow<ScreenState<SettingsState>> = _screenState
+class SettingsViewModel(private val appPreferences: AppPreferences) : ViewModel() {
+    private val _dataState = MutableStateFlow<DataState<SettingsState>>(DataState.Loading)
+    val dataState: StateFlow<DataState<SettingsState>> = _dataState
 
     init {
         viewModelScope.launch {
@@ -33,9 +33,9 @@ class SettingsViewModel(val appPreferences: AppPreferences) : ViewModel() {
                     darkThemeEnabled = isDarkTheme
                 )
             }.catch { error ->
-                _screenState.value = ScreenState.Error(error.message ?: "Unknown error occurred")
+                _dataState.value = DataState.Error(error.message ?: "Unknown error occurred")
             }.collect { settingsState ->
-                _screenState.value = ScreenState.Success(settingsState)
+                _dataState.value = DataState.Success(settingsState)
             }
         }
     }
@@ -45,7 +45,7 @@ class SettingsViewModel(val appPreferences: AppPreferences) : ViewModel() {
             try {
                 appPreferences.setTemperatureUnit(unit)
             } catch (e: Exception) {
-                _screenState.value = ScreenState.Error("Failed to update temperature unit: ${e.message}")
+                _dataState.value = DataState.Error("Failed to update temperature unit: ${e.message}")
             }
         }
     }
@@ -55,7 +55,7 @@ class SettingsViewModel(val appPreferences: AppPreferences) : ViewModel() {
             try {
                 appPreferences.setApiKey(key)
             } catch (e: Exception) {
-                _screenState.value = ScreenState.Error("Failed to update API key: ${e.message}")
+                _dataState.value = DataState.Error("Failed to update API key: ${e.message}")
             }
         }
     }
@@ -65,18 +65,18 @@ class SettingsViewModel(val appPreferences: AppPreferences) : ViewModel() {
             try {
                 appPreferences.setDarkTheme(enabled)
             } catch (e: Exception) {
-                _screenState.value = ScreenState.Error("Failed to update theme: ${e.message}")
+                _dataState.value = DataState.Error("Failed to update theme: ${e.message}")
             }
         }
     }
 
     fun onApiKeyChanged(newValue: String) {
-        val currentState = _screenState.value
-        if (currentState is ScreenState.Success) {
+        val currentState = _dataState.value
+        if (currentState is DataState.Success) {
             val isValid = newValue.isNotBlank()
             val errorMessage = if (!isValid) "API key cannot be empty" else null
 
-            _screenState.value = ScreenState.Success(
+            _dataState.value = DataState.Success(
                 currentState.state.copy(
                     apiKeyTextFieldState = TextFieldState(
                         value = newValue,
@@ -89,9 +89,9 @@ class SettingsViewModel(val appPreferences: AppPreferences) : ViewModel() {
     }
 
     fun saveTemperatureUnit(tempUnit: String) {
-        val currentState = _screenState.value
-        if (currentState is ScreenState.Success) {
-            _screenState.value = ScreenState.Success(
+        val currentState = _dataState.value
+        if (currentState is DataState.Success) {
+            _dataState.value = DataState.Success(
                 currentState.state.copy(
                     temperatureUnit = tempUnit
                 )
@@ -102,10 +102,10 @@ class SettingsViewModel(val appPreferences: AppPreferences) : ViewModel() {
     }
 
     fun saveThemeSetting(isDarkTheme: Boolean) {
-        val currentState = _screenState.value
-        if (currentState is ScreenState.Success) {
+        val currentState = _dataState.value
+        if (currentState is DataState.Success) {
 
-            _screenState.value = ScreenState.Success(
+            _dataState.value = DataState.Success(
                 currentState.state.copy(
                     darkThemeEnabled = isDarkTheme
                 )
@@ -116,8 +116,8 @@ class SettingsViewModel(val appPreferences: AppPreferences) : ViewModel() {
     }
 
     fun saveApiKey() {
-        val currentState = _screenState.value
-        if (currentState is ScreenState.Success) {
+        val currentState = _dataState.value
+        if (currentState is DataState.Success) {
             val apiKey = currentState.state.apiKeyTextFieldState.value
             if (apiKey.isNotBlank()) {
                 setApiKey(apiKey)

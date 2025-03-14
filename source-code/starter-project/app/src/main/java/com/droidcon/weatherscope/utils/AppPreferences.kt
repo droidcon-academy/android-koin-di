@@ -17,6 +17,7 @@ class AppPreferences(private val dataStore: DataStore<Preferences>) {
         private val TEMP_UNIT_KEY = stringPreferencesKey("temperature_unit")
         private val API_KEY = stringPreferencesKey("api_key")
         private val THEME_MODE_KEY = booleanPreferencesKey("theme_mode")
+        private val CITY_NAME = stringPreferencesKey("city_text")
     }
 
     val temperatureUnit: Flow<String> = dataStore.data
@@ -37,6 +38,12 @@ class AppPreferences(private val dataStore: DataStore<Preferences>) {
         }
         .map { preferences -> preferences[THEME_MODE_KEY] ?: false } // default : false
 
+    val currentCityName: Flow<String> = dataStore.data
+        .catch { exception ->
+            if (exception is IOException) emit(emptyPreferences()) else throw exception
+        }
+        .map { preferences -> preferences[CITY_NAME] ?: "" } // default : empty string
+
     suspend fun setTemperatureUnit(unit: String) {
         dataStore.edit { preferences ->
             preferences[TEMP_UNIT_KEY] = unit
@@ -53,6 +60,12 @@ class AppPreferences(private val dataStore: DataStore<Preferences>) {
     suspend fun setDarkTheme(enabled: Boolean) {
         dataStore.edit { preferences ->
             preferences[THEME_MODE_KEY] = enabled
+        }
+    }
+
+    suspend fun setCurrentCityName(key: String) {
+        dataStore.edit { preferences ->
+            preferences[CITY_NAME] = key
         }
     }
 }
