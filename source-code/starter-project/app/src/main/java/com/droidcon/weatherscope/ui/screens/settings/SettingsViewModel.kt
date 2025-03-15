@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.droidcon.weatherscope.ui.common.DataState
 import com.droidcon.weatherscope.ui.common.TextFieldState
 import com.droidcon.weatherscope.common.AppPreferences
+import com.droidcon.weatherscope.common.TemperatureUnit
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
@@ -40,7 +41,7 @@ class SettingsViewModel(private val appPreferences: AppPreferences) : ViewModel(
         }
     }
 
-    private fun setTemperatureUnit(unit: String) {
+    private fun setTemperatureUnit(unit: TemperatureUnit) {
         viewModelScope.launch {
             try {
                 appPreferences.setTemperatureUnit(unit)
@@ -88,7 +89,7 @@ class SettingsViewModel(private val appPreferences: AppPreferences) : ViewModel(
         }
     }
 
-    fun saveTemperatureUnit(tempUnit: String) {
+    fun saveTemperatureUnit(tempUnit: TemperatureUnit) {
         val currentState = _dataState.value
         if (currentState is DataState.Success) {
             _dataState.value = DataState.Success(

@@ -20,6 +20,17 @@ class GetCurrentWeatherUseCase(private val currentWeatherRepository: WeatherRepo
             apiResponse.toDomain()
         }
     }
+
+    suspend fun getCurrentWeather(latitude: Double, longitude: Double): Flow<DataState<CurrentWeather>> {
+        val response = currentWeatherRepository.getCurrentWeatherByCoordinates(
+            lat = latitude,
+            lon = longitude
+        )
+
+        return response.toDomainStateFlow { apiResponse ->
+            apiResponse.toDomain()
+        }
+    }
 }
 
 /**
@@ -44,6 +55,8 @@ fun CurrentWeatherResponse.toDomain(): CurrentWeather {
 
     return CurrentWeather(
         locationName = name,
+        lat = coordinates.latitude,
+        lon = coordinates.longitude,
         status = primaryWeatherCondition.main,
         description = primaryWeatherCondition.description.capitalize(),
         temp = main.temperature,

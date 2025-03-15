@@ -18,7 +18,7 @@ data class CurrentLocationDataResponse(
     val lon: Double,
 
     @Json(name = "country")
-    val country: String,
+    val country: String? = null,
 
     @Json(name = "state")
     val state: String?

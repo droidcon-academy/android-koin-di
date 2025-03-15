@@ -9,4 +9,8 @@ class WeatherDomain(private val getCurrentWeatherUseCase: GetCurrentWeatherUseCa
     suspend fun getCurrentWeather(city: String): Flow<DataState<CurrentWeather>> {
         return getCurrentWeatherUseCase.getCurrentWeather(cityName = city)
     }
+
+    suspend fun getCurrentWeatherByCoordinates(latitude: Double, longitude: Double): Flow<DataState<CurrentWeather>> {
+        return getCurrentWeatherUseCase.getCurrentWeather(latitude = latitude, longitude = longitude)
+    }
 }

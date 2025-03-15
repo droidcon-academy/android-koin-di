@@ -30,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.droidcon.weatherscope.R
+import com.droidcon.weatherscope.common.TemperatureUnit
 import com.droidcon.weatherscope.ui.common.DataState
 import org.koin.androidx.compose.koinViewModel
 
@@ -79,14 +80,14 @@ fun SettingsScreen(
                     Spacer(modifier = Modifier.height(8.dp))
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         RadioButton(
-                            selected = settingsState.temperatureUnit == "Celsius",
-                            onClick = { viewModel.saveTemperatureUnit("Celsius") }
+                            selected = settingsState.temperatureUnit == TemperatureUnit.CELSIUS,
+                            onClick = { viewModel.saveTemperatureUnit(TemperatureUnit.CELSIUS) }
                         )
                         Text("Celsius")
                         Spacer(modifier = Modifier.width(16.dp))
                         RadioButton(
-                            selected = settingsState.temperatureUnit == "Fahrenheit",
-                            onClick = { viewModel.saveTemperatureUnit("Fahrenheit") }
+                            selected = settingsState.temperatureUnit == TemperatureUnit.FAHRENHEIT,
+                            onClick = { viewModel.saveTemperatureUnit(TemperatureUnit.FAHRENHEIT) }
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text("Fahrenheit")

@@ -132,7 +132,7 @@ data class SystemInfo(
     val id: Int?,
 
     @Json(name = "country")
-    val country: String,
+    val country: String? = null,
 
     @Json(name = "sunrise")
     val sunrise: Long,
