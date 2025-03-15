@@ -5,7 +5,7 @@ import com.droidcon.weatherscope.data.network.services.openweather.models.Weathe
 import com.droidcon.weatherscope.data.repositories.WeatherRepository
 import com.droidcon.weatherscope.domain.models.CurrentWeather
 import com.droidcon.weatherscope.ui.common.DataState
-import com.droidcon.weatherscope.utils.capitalize
+import com.droidcon.weatherscope.common.capitalize
 import kotlinx.coroutines.flow.Flow
 import java.net.URL
 

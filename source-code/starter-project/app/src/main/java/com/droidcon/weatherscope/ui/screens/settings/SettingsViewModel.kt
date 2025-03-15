@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.droidcon.weatherscope.ui.common.DataState
 import com.droidcon.weatherscope.ui.common.TextFieldState
-import com.droidcon.weatherscope.utils.AppPreferences
+import com.droidcon.weatherscope.common.AppPreferences
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch

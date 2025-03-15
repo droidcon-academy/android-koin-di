@@ -1,4 +1,4 @@
-package com.droidcon.weatherscope.utils
+package com.droidcon.weatherscope.common
 
 /**
  * Helper extension function to capitalize the first letter of a string

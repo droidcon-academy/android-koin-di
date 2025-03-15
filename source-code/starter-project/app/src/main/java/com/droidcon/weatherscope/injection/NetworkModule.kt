@@ -5,7 +5,7 @@ import com.droidcon.weatherscope.data.network.services.openweather.GeocodingApiS
 import com.droidcon.weatherscope.data.network.services.openweather.OPEN_WEATHER_API
 import com.droidcon.weatherscope.data.network.services.openweather.OPEN_WEATHER_GEOCODING_API
 import com.droidcon.weatherscope.data.network.services.openweather.WeatherApiService
-import com.droidcon.weatherscope.utils.AppPreferences
+import com.droidcon.weatherscope.common.AppPreferences
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor

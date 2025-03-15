@@ -1,11 +1,10 @@
 package com.droidcon.weatherscope.injection
 
-import android.app.Application
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
-import com.droidcon.weatherscope.utils.AppPreferences
+import com.droidcon.weatherscope.common.AppPreferences
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 

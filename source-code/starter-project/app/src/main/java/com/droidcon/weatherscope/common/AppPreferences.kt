@@ -1,4 +1,4 @@
-package com.droidcon.weatherscope.utils
+package com.droidcon.weatherscope.common
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
