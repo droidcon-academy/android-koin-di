@@ -7,9 +7,12 @@ import com.droidcon.weatherscope.domain.WeatherDomain
 import com.droidcon.weatherscope.ui.common.DataState
 import com.droidcon.weatherscope.ui.common.TextFieldState
 import com.droidcon.weatherscope.common.AppPreferences
+import com.droidcon.weatherscope.common.GetCurrentLocationUseCase
 import com.droidcon.weatherscope.common.TemperatureUnit
 import com.droidcon.weatherscope.common.toFahrenheit
 import com.droidcon.weatherscope.domain.models.CurrentWeather
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
@@ -22,7 +25,8 @@ import kotlin.math.roundToInt
 
 class CurrentWeatherViewModel(
     private val weatherDomain: WeatherDomain,
-    private val appPreferences: AppPreferences
+    private val appPreferences: AppPreferences,
+    private val getCurrentLocationUseCase: GetCurrentLocationUseCase
 ) : ViewModel() {
 
     private val _dataState =
@@ -76,7 +80,8 @@ class CurrentWeatherViewModel(
                 ) { lat, lon -> Pair(lat, lon) }
 
                 // For every new coordinate pair, fetch weather from the domain.
-                val weatherFlow = coordinatesFlow.distinctUntilChanged().flatMapLatest { (lat, lon) ->
+                val weatherFlow =
+                    coordinatesFlow.distinctUntilChanged().flatMapLatest { (lat, lon) ->
                         weatherDomain.getCurrentWeatherByCoordinates(
                             latitude = lat,
                             longitude = lon
@@ -116,14 +121,17 @@ class CurrentWeatherViewModel(
         }
     }
 
-    private suspend fun setLocationAndLoadWeather(lat: Double, lon: Double) {
-        appPreferences.setCurrentCityLat(lat)
-        appPreferences.setCurrentCityLon(lon)
-        loadWeather()
-    }
+    private suspend fun setLocationCoordinates(lat: Double, lon: Double) {
+        try {
+            appPreferences.setCurrentCityLat(lat)
+            appPreferences.setCurrentCityLon(lon)
+        } catch (e: Exception) {
+            _dataState.value =
+                DataState.Error("Error saving lat lon: ${(e.message ?: "Unknown error")}")
+        }
+    } // loadWeather() is listening for changes in appPreferences data since init()
 
     fun setCurrentCityNameLocation() {
-        Log.d("MANE", "setCurrentCityNameLocation: pressed")
         val currentState = _dataState.value
         viewModelScope.launch {
             try {
@@ -147,7 +155,7 @@ class CurrentWeatherViewModel(
                                     )
 
                                     DataState.Loading -> DataState.Loading
-                                    is DataState.Success -> setLocationAndLoadWeather(
+                                    is DataState.Success -> setLocationCoordinates(
                                         lat = locationData.state.lat,
                                         lon = locationData.state.lon
                                     )
@@ -208,7 +216,7 @@ class CurrentWeatherViewModel(
                             )
                         )
                     } else {
-                        setLocationAndLoadWeather(
+                        setLocationCoordinates(
                             lat = currentState.state.latTextFieldState.value.toDouble(),
                             lon = currentState.state.lonTextFieldState.value.toDouble()
                         )
@@ -216,7 +224,8 @@ class CurrentWeatherViewModel(
                 }
             } catch (e: Exception) {
                 if (currentState is DataState.Success) {
-                    _dataState.value = DataState.Error(message = "Failed to get weather for coordinates: ${e.message} \nPlease retry")
+                    _dataState.value =
+                        DataState.Error(message = "Failed to get weather for coordinates: ${e.message} \nPlease retry")
                 }
             }
         }
@@ -314,6 +323,29 @@ class CurrentWeatherViewModel(
             }
 
             DataState.Loading -> Unit
+        }
+    }
+
+    fun getCurrentLocationCoordinates() {
+        viewModelScope.launch {
+            getCurrentLocationUseCase.execute()
+                .catch { exception ->
+                    _dataState.value = DataState.Error(
+                        "Error loading device coordinates: ${exception.message ?: "Unknown error occurred"}"
+                    )
+                }
+                .collectLatest { result ->
+                    result.fold(
+                        onSuccess = { (latitude, longitude) ->
+                            setLocationCoordinates(lat = latitude, lon = longitude)
+                        },
+                        onFailure = { exception ->
+                            _dataState.value = DataState.Error(
+                                "Error loading device coordinates: ${exception.message ?: "Unknown error occurred"}"
+                            )
+                        }
+                    )
+                }
         }
     }
 }

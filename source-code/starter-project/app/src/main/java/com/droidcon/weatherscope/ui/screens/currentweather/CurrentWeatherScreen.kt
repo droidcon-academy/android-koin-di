@@ -16,7 +16,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -40,10 +39,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.droidcon.weatherscope.R
-import com.droidcon.weatherscope.domain.models.CurrentWeather
 import com.droidcon.weatherscope.ui.common.DataState
 import org.koin.androidx.compose.koinViewModel
-import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -106,7 +103,7 @@ fun CurrentWeatherScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             Button(
-                onClick = { /* TODO: Trigger GPS lookup and call viewModel.loadWeather(...) with coordinates */ },
+                onClick = { viewModel.getCurrentLocationCoordinates() },
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Use Current GPS")
