@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -34,110 +35,90 @@ import com.droidcon.weatherscope.common.TemperatureUnit
 import com.droidcon.weatherscope.ui.common.DataState
 import org.koin.androidx.compose.koinViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingsScreen(
-    onBack: () -> Unit
-) {
+fun SettingsScreen() {
     val viewModel: SettingsViewModel = koinViewModel()
     val state by viewModel.dataState.collectAsState()
     val screenState = state
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Settings") },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_back),
-                            contentDescription = "Back",
-                            modifier = Modifier.size(24.dp)
-                        )
-                    }
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .imePadding()
+            .padding(16.dp)
+    ) {
+        when (screenState) {
+            is DataState.Loading -> {
+                Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator()
                 }
-            )
-        }
-    ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .padding(16.dp)
-        ) {
-            when (screenState) {
-                is DataState.Loading -> {
-                    Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                        CircularProgressIndicator()
-                    }
-                }
+            }
 
-                is DataState.Success -> {
-                    val settingsState = screenState.state
+            is DataState.Success -> {
+                val settingsState = screenState.state
 
-                    // Temperature Unit Toggle Section
-                    Text("Temperature Unit", style = MaterialTheme.typography.titleMedium)
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        RadioButton(
-                            selected = settingsState.temperatureUnit == TemperatureUnit.CELSIUS,
-                            onClick = { viewModel.saveTemperatureUnit(TemperatureUnit.CELSIUS) }
-                        )
-                        Text("Celsius")
-                        Spacer(modifier = Modifier.width(16.dp))
-                        RadioButton(
-                            selected = settingsState.temperatureUnit == TemperatureUnit.FAHRENHEIT,
-                            onClick = { viewModel.saveTemperatureUnit(TemperatureUnit.FAHRENHEIT) }
-                        )
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text("Fahrenheit")
-                    }
-                    Spacer(modifier = Modifier.height(24.dp))
-
-                    // Dark/Light Mode Toggle Section
-                    Text("Theme", style = MaterialTheme.typography.titleMedium)
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Switch(
-                            checked = settingsState.darkThemeEnabled,
-                            onCheckedChange = { viewModel.saveThemeSetting(!settingsState.darkThemeEnabled)}
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(if (settingsState.darkThemeEnabled) "Dark Mode" else "Light Mode")
-                    }
-                    Spacer(modifier = Modifier.height(24.dp))
-
-                    // Api Key Section
-                    Text("Weather Api Key", style = MaterialTheme.typography.titleMedium)
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        TextField(
-                            value = settingsState.apiKeyTextFieldState.value,
-                            onValueChange = { viewModel.onApiKeyChanged(it) },
-                            isError = settingsState.apiKeyTextFieldState.isError,
-                            supportingText = {
-                                Text(text = settingsState.apiKeyTextFieldState.errorMessage ?: "")
-                            },
-                            label = { Text("Enter Key") },
-                            modifier = Modifier.weight(1f)
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Button(onClick = {
-                            viewModel.saveApiKey()
-                        }) {
-                            Text("Set")
-                        }
-                    }
-                }
-
-                is DataState.Error -> {
-                    Text(
-                        text = "Error: ${screenState.message}",
-                        color = MaterialTheme.colorScheme.error,
-                        style = MaterialTheme.typography.bodyMedium
+                // Temperature Unit Toggle Section
+                Text("Temperature Unit", style = MaterialTheme.typography.titleMedium)
+                Spacer(modifier = Modifier.height(8.dp))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    RadioButton(
+                        selected = settingsState.temperatureUnit == TemperatureUnit.CELSIUS,
+                        onClick = { viewModel.saveTemperatureUnit(TemperatureUnit.CELSIUS) }
                     )
+                    Text("Celsius")
+                    Spacer(modifier = Modifier.width(16.dp))
+                    RadioButton(
+                        selected = settingsState.temperatureUnit == TemperatureUnit.FAHRENHEIT,
+                        onClick = { viewModel.saveTemperatureUnit(TemperatureUnit.FAHRENHEIT) }
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text("Fahrenheit")
                 }
+                Spacer(modifier = Modifier.height(24.dp))
+
+                // Dark/Light Mode Toggle Section
+                Text("Theme", style = MaterialTheme.typography.titleMedium)
+                Spacer(modifier = Modifier.height(16.dp))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Switch(
+                        checked = settingsState.darkThemeEnabled,
+                        onCheckedChange = { viewModel.saveThemeSetting(!settingsState.darkThemeEnabled) }
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(if (settingsState.darkThemeEnabled) "Dark Mode" else "Light Mode")
+                }
+                Spacer(modifier = Modifier.height(24.dp))
+
+                // Api Key Section
+                Text("Weather Api Key", style = MaterialTheme.typography.titleMedium)
+                Spacer(modifier = Modifier.height(16.dp))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    TextField(
+                        value = settingsState.apiKeyTextFieldState.value,
+                        onValueChange = { viewModel.onApiKeyChanged(it) },
+                        isError = settingsState.apiKeyTextFieldState.isError,
+                        supportingText = {
+                            Text(text = settingsState.apiKeyTextFieldState.errorMessage ?: "")
+                        },
+                        label = { Text("Enter Key") },
+                        modifier = Modifier.weight(1f)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Button(onClick = {
+                        viewModel.saveApiKey()
+                    }) {
+                        Text("Set")
+                    }
+                }
+            }
+
+            is DataState.Error -> {
+                Text(
+                    text = "Error: ${screenState.message}",
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodyMedium
+                )
             }
         }
     }

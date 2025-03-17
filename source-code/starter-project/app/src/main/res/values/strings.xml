@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">Weather Scope</string>
+    <string name="home">home</string>
+    <string name="forecast">forecast</string>
+    <string name="settings">settings</string>
+    <string name="title_home">Weather Scope</string>
+    <string name="title_forecast">5-Day Forecast</string>
+    <string name="title_settings">Settings</string>
 </resources>
