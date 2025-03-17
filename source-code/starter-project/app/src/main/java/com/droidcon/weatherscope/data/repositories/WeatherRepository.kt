@@ -2,6 +2,7 @@ package com.droidcon.weatherscope.data.repositories
 
 import com.droidcon.weatherscope.data.network.services.openweather.WeatherApiService
 import com.droidcon.weatherscope.data.network.services.openweather.models.CurrentWeatherResponse
+import com.droidcon.weatherscope.data.network.services.openweather.models.WeatherForecastResponse
 import com.droidcon.weatherscope.data.network.utils.ApiCallResult
 import com.droidcon.weatherscope.data.network.utils.safeApiCall
 import kotlinx.coroutines.flow.Flow
@@ -16,5 +17,10 @@ class WeatherRepository(private val apiService: WeatherApiService) {
     fun getCurrentWeatherByCoordinates(lat: Double, lon: Double): Flow<ApiCallResult<CurrentWeatherResponse>> =
         safeApiCall {
             apiService.getCurrentWeatherByCoordinates(lat, lon)
+        }
+
+    fun getWeatherForecastByCoordinates(lat: Double, lon: Double): Flow<ApiCallResult<WeatherForecastResponse>> =
+        safeApiCall {
+            apiService.getForecastByCoordinates(lat, lon)
         }
 }

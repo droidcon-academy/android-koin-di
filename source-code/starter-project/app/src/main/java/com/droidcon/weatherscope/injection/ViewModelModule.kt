@@ -8,6 +8,6 @@ import org.koin.dsl.module
 
 val viewModelModule = module {
     viewModel { CurrentWeatherViewModel(get(), get(), get()) }
-    viewModel { ForecastViewModel() }
+    viewModel { ForecastViewModel(get(), get()) }
     viewModel { SettingsViewModel(appPreferences = get()) }
 }

@@ -1,6 +1,7 @@
 package com.droidcon.weatherscope.data.network.services.openweather
 
 import com.droidcon.weatherscope.data.network.services.openweather.models.CurrentWeatherResponse
+import com.droidcon.weatherscope.data.network.services.openweather.models.WeatherForecastResponse
 import retrofit2.http.GET
 import retrofit2.http.Query
 
@@ -17,4 +18,11 @@ interface WeatherApiService {
         @Query("lon") lon: Double,
         @Query("units") units: String = "metric"
     ): CurrentWeatherResponse
+
+    @GET("forecast")
+    suspend fun getForecastByCoordinates(
+        @Query("lat") latitude: Double,
+        @Query("lon") longitude: Double,
+        @Query("units") units: String = "metric"
+    ): WeatherForecastResponse
 }
