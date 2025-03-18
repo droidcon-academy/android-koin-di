@@ -3,22 +3,18 @@ package com.droidcon.weatherscope.ui.screens.forecast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.droidcon.weatherscope.common.AppPreferences
-import com.droidcon.weatherscope.common.GetCurrentLocationUseCase
 import com.droidcon.weatherscope.common.TemperatureUnit
 import com.droidcon.weatherscope.common.toFahrenheit
 import com.droidcon.weatherscope.domain.GetWeatherForecastUseCase
-import com.droidcon.weatherscope.domain.WeatherDomain
 import com.droidcon.weatherscope.domain.models.WeatherForecastItem
 import com.droidcon.weatherscope.ui.common.DataState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.launch
-import org.koin.core.KoinApplication.Companion.init
 import java.time.format.DateTimeFormatter
 import kotlin.math.roundToInt
 

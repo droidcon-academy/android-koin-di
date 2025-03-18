@@ -38,16 +38,16 @@ data class WeatherForecastResponse(
         val wind: Wind?,
 
         @Json(name = "visibility")
-        val visibility: Int,
+        val visibility: Int?,
 
         @Json(name = "pop")
-        val probabilityOfPrecipitation: Double,
+        val probabilityOfPrecipitation: Double?,
 
         @Json(name = "rain")
         val rain: Rain?,
 
         @Json(name = "sys")
-        val sys: ForecastSys,
+        val sys: ForecastSys?,
 
         @Json(name = "dt_txt")
         val dateTimeText: String

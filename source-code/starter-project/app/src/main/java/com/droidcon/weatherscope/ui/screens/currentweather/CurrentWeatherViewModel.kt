@@ -1,6 +1,5 @@
 package com.droidcon.weatherscope.ui.screens.currentweather
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.droidcon.weatherscope.domain.WeatherDomain
@@ -11,8 +10,6 @@ import com.droidcon.weatherscope.common.GetCurrentLocationUseCase
 import com.droidcon.weatherscope.common.TemperatureUnit
 import com.droidcon.weatherscope.common.toFahrenheit
 import com.droidcon.weatherscope.domain.models.CurrentWeather
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
@@ -99,9 +96,7 @@ class CurrentWeatherViewModel(
                     }
                     .collect { (weatherData, tempUnit) ->
                         _dataState.value = when (weatherData) {
-                            is DataState.Error -> DataState.Error(
-                                "Error loading weather data: ${weatherData.message}"
-                            )
+                            is DataState.Error -> DataState.Error("Error loading weather data: ${weatherData.message}")
 
                             DataState.Loading -> DataState.Loading
                             is DataState.Success -> {
@@ -150,11 +145,15 @@ class CurrentWeatherViewModel(
                         weatherDomain.getCurrentWeather(city = currentState.state.cityTextFieldState.value)
                             .collectLatest { locationData ->
                                 when (locationData) {
-                                    is DataState.Error -> DataState.Error(
-                                        "Error loading weather data: ${locationData.message}"
-                                    )
+                                    is DataState.Error -> {
+                                        _dataState.value = DataState.Error(
+                                            "Error loading weather data: ${locationData.message}"
+                                        )
+                                    }
 
-                                    DataState.Loading -> DataState.Loading
+                                    DataState.Loading -> {
+                                        _dataState.value = DataState.Loading
+                                    }
                                     is DataState.Success -> setLocationCoordinates(
                                         lat = locationData.state.lat,
                                         lon = locationData.state.lon

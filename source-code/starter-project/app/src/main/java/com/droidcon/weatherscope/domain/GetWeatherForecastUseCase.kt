@@ -10,17 +10,14 @@ import java.net.URL
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-class GetWeatherForecastUseCase (private val currentWeatherRepository: WeatherRepository) {
+class GetWeatherForecastUseCase (private val weatherRepository: WeatherRepository) {
 
     suspend fun getWeatherForecast(latitude: Double, longitude: Double): Flow<DataState<List<WeatherForecastItem>>> {
-        val response = currentWeatherRepository.getWeatherForecastByCoordinates(
-            lat = latitude,
-            lon = longitude
-        )
 
-        return response.toDomainStateFlow { apiResponse ->
-            apiResponse.toDomain()
-        }
+        return weatherRepository.getWeatherForecast(
+            latitude = latitude,
+            longitude = longitude
+        )
     }
 }
 
