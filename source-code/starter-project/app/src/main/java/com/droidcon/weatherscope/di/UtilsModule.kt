@@ -1,4 +1,4 @@
-package com.droidcon.weatherscope.injection
+package com.droidcon.weatherscope.di
 
 import android.content.Context
 import androidx.datastore.core.DataStore

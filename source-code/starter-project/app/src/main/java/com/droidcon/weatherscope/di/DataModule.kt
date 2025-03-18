@@ -1,4 +1,4 @@
-package com.droidcon.weatherscope.injection
+package com.droidcon.weatherscope.di
 
 import com.droidcon.weatherscope.data.database.AppDatabase
 import com.droidcon.weatherscope.data.database.forecast.WeatherForecastLocalSource

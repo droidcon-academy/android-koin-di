@@ -1,4 +1,4 @@
-package com.droidcon.weatherscope.injection
+package com.droidcon.weatherscope.di
 
 import com.droidcon.weatherscope.data.network.buildRetrofit
 import com.droidcon.weatherscope.data.network.services.openweather.GeocodingApiService

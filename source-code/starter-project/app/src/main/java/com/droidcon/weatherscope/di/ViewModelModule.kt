@@ -1,4 +1,4 @@
-package com.droidcon.weatherscope.injection
+package com.droidcon.weatherscope.di
 
 import com.droidcon.weatherscope.ui.screens.currentweather.CurrentWeatherViewModel
 import com.droidcon.weatherscope.ui.screens.forecast.ForecastViewModel

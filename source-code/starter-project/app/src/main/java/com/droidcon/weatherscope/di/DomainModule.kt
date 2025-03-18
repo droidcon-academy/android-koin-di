@@ -1,4 +1,4 @@
-package com.droidcon.weatherscope.injection
+package com.droidcon.weatherscope.di
 
 import com.droidcon.weatherscope.domain.GetCurrentWeatherUseCase
 import com.droidcon.weatherscope.domain.GetWeatherForecastUseCase
