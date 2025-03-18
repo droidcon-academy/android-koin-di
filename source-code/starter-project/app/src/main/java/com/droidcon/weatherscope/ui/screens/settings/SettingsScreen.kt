@@ -9,35 +9,30 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.droidcon.weatherscope.LocalSettingsViewModel
 import com.droidcon.weatherscope.R
-import com.droidcon.weatherscope.ui.common.ScreenState
+import com.droidcon.weatherscope.common.TemperatureUnit
+import com.droidcon.weatherscope.ui.common.DataState
 
 @Composable
-fun SettingsScreen(
-    viewModel: SettingsViewModel = SettingsViewModel()
-) {
-    val state by viewModel.screenState.collectAsState()
+fun SettingsScreen() {
+    val viewModel = LocalSettingsViewModel.current
+    val state by viewModel.dataState.collectAsState()
     val screenState = state
 
     Column(
@@ -47,68 +42,84 @@ fun SettingsScreen(
             .padding(16.dp)
     ) {
         when (screenState) {
-            is ScreenState.Loading -> {
+            is DataState.Loading -> {
                 Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
                     CircularProgressIndicator()
                 }
             }
 
-            is ScreenState.Success -> {
+            is DataState.Success -> {
                 val settingsState = screenState.state
 
                 // Temperature Unit Toggle Section
-                Text("Temperature Unit", style = MaterialTheme.typography.titleMedium)
+                Text(
+                    stringResource(R.string.temperature_unit),
+                    style = MaterialTheme.typography.titleMedium
+                )
                 Spacer(modifier = Modifier.height(8.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     RadioButton(
-                        selected = settingsState.temperatureUnit == "Celsius",
-                        onClick = { }
+                        selected = settingsState.temperatureUnit == TemperatureUnit.CELSIUS,
+                        onClick = { viewModel.saveTemperatureUnit(TemperatureUnit.CELSIUS) }
                     )
-                    Text("Celsius")
+                    Text(stringResource(R.string.celsius))
                     Spacer(modifier = Modifier.width(16.dp))
                     RadioButton(
-                        selected = settingsState.temperatureUnit == "Fahrenheit",
-                        onClick = { }
+                        selected = settingsState.temperatureUnit == TemperatureUnit.FAHRENHEIT,
+                        onClick = { viewModel.saveTemperatureUnit(TemperatureUnit.FAHRENHEIT) }
                     )
                     Spacer(modifier = Modifier.width(4.dp))
-                    Text("Fahrenheit")
+                    Text(stringResource(R.string.fahrenheit))
                 }
                 Spacer(modifier = Modifier.height(24.dp))
 
                 // Dark/Light Mode Toggle Section
-                Text("Theme", style = MaterialTheme.typography.titleMedium)
+                Text(stringResource(R.string.theme), style = MaterialTheme.typography.titleMedium)
                 Spacer(modifier = Modifier.height(16.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Spacer(modifier = Modifier.width(8.dp))
                     Switch(
                         checked = settingsState.darkThemeEnabled,
-                        onCheckedChange = { }
+                        onCheckedChange = { viewModel.saveThemeSetting(!settingsState.darkThemeEnabled) }
                     )
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text(if (settingsState.darkThemeEnabled) "Dark Mode" else "Light Mode")
+                    Text(
+                        if (settingsState.darkThemeEnabled) stringResource(R.string.dark_mode) else stringResource(
+                            R.string.light_mode
+                        )
+                    )
                 }
                 Spacer(modifier = Modifier.height(24.dp))
 
-                // Dark/Light Mode Toggle Section
-                Text("Weather Api Key", style = MaterialTheme.typography.titleMedium)
+                // Api Key Section
+                Text(
+                    stringResource(R.string.weather_api_key),
+                    style = MaterialTheme.typography.titleMedium
+                )
                 Spacer(modifier = Modifier.height(16.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     TextField(
-                        value = "",
-                        onValueChange = { },
-                        label = { Text("Enter Key") },
+                        value = settingsState.apiKeyTextFieldState.value,
+                        onValueChange = { viewModel.onApiKeyChanged(it) },
+                        isError = settingsState.apiKeyTextFieldState.isError,
+                        supportingText = {
+                            Text(text = settingsState.apiKeyTextFieldState.errorMessage ?: "")
+                        },
+                        label = { Text(stringResource(R.string.enter_key)) },
                         modifier = Modifier.weight(1f)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
-                    Button(onClick = { }) {
-                        Text("Set")
+                    Button(onClick = {
+                        viewModel.saveApiKey()
+                    }) {
+                        Text(stringResource(R.string.set))
                     }
                 }
             }
 
-            is ScreenState.Error -> {
+            is DataState.Error -> {
                 Text(
-                    text = "Error: ${screenState.message}",
+                    text = stringResource(R.string.error_generic, screenState.message),
                     color = MaterialTheme.colorScheme.error,
                     style = MaterialTheme.typography.bodyMedium
                 )

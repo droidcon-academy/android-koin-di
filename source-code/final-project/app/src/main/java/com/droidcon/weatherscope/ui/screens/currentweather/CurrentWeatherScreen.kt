@@ -1,0 +1,247 @@
+package com.droidcon.weatherscope.ui.screens.currentweather
+
+import RotatingSettingsIconAnimation
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
+import com.droidcon.weatherscope.R
+import com.droidcon.weatherscope.ui.common.DataState
+import org.koin.androidx.compose.koinViewModel
+
+@Composable
+fun CurrentWeatherScreen(onNavigateToSettings: (String) -> Unit = {}) {
+    val viewModel: CurrentWeatherViewModel = koinViewModel()
+    val state by viewModel.dataState.collectAsState()
+    val screenState = state
+    val scrollState = rememberScrollState()
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .imePadding()
+            .verticalScroll(scrollState)
+            .padding(16.dp)
+    ) {
+        when (screenState) {
+            is DataState.Loading -> {
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
+            }
+
+            is DataState.Error -> {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Text(
+                            text = screenState.message,
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    }
+                }
+            }
+
+            is DataState.Success -> {
+                val weatherState = screenState.state
+                weatherState.data?.let { WeatherCard(weatherData = it) }
+            }
+        }
+
+        val weatherState = (screenState as? DataState.Success)?.state
+
+        Spacer(modifier = Modifier.height(48.dp))
+
+        Button(
+            onClick = { viewModel.getCurrentLocationCoordinates() },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(stringResource(R.string.use_current_gps))
+        }
+        Spacer(modifier = Modifier.height(36.dp))
+
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            TextField(
+                value = weatherState?.cityTextFieldState?.value ?: "",
+                onValueChange = { viewModel.onLocationTextValueChanged(it) },
+                isError = weatherState?.cityTextFieldState?.isError ?: false,
+                supportingText = {
+                    Text(text = weatherState?.cityTextFieldState?.errorMessage ?: "")
+                },
+                label = { Text(stringResource(R.string.enter_city)) },
+                modifier = Modifier.weight(1f)
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Button(onClick = { viewModel.setCurrentCityNameLocation() }) {
+                Text(stringResource(R.string.search))
+            }
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        Row {
+            Button(onClick = { onNavigateToSettings(weatherState?.data?.locationName ?: "") }) {
+                Text(stringResource(R.string.go_to_settings))
+                Spacer(modifier = Modifier.width(8.dp))
+
+                Icon(
+                    imageVector = Icons.Default.Settings,
+                    contentDescription = "Settings Icon",
+                    tint = MaterialTheme.colorScheme.inverseOnSurface,
+                    modifier = Modifier.rotate(RotatingSettingsIconAnimation())
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun WeatherCard(
+    weatherData: CurrentWeatherUiState,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        modifier = modifier.fillMaxWidth(),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            // Location and status row
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // Location and weather status
+                Column {
+                    Text(
+                        text = weatherData.locationName,
+                        style = MaterialTheme.typography.headlineSmall,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        text = weatherData.status,
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+
+                // Weather icon
+                AsyncImage(
+                    model = weatherData.iconLink.toString(),
+                    contentDescription = weatherData.description,
+                    modifier = Modifier.size(64.dp),
+                    contentScale = ContentScale.Fit,
+                    placeholder = painterResource(id = R.drawable.ic_placeholder_weather),
+                    error = painterResource(id = R.drawable.ic_broken_image)
+                )
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Weather description
+            Text(
+                text = weatherData.description,
+                style = MaterialTheme.typography.bodyLarge
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Temperature and humidity
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                // Temperature
+                WeatherInfoItem(
+                    icon = Icons.Filled.Info,
+                    label = stringResource(R.string.temperature),
+                    value = weatherData.temperature
+                )
+
+                // Humidity
+                WeatherInfoItem(
+                    icon = Icons.Filled.Info,
+                    label = stringResource(R.string.humidity),
+                    value = weatherData.humidity
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun WeatherInfoItem(
+    icon: ImageVector,
+    label: String,
+    value: String,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        Column {
+            Text(
+                text = label,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Text(
+                text = value,
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Medium
+            )
+        }
+    }
+}
