@@ -29,6 +29,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.droidcon.weatherscope.R
 import com.droidcon.weatherscope.common.TemperatureUnit
@@ -58,26 +59,26 @@ fun SettingsScreen() {
                 val settingsState = screenState.state
 
                 // Temperature Unit Toggle Section
-                Text("Temperature Unit", style = MaterialTheme.typography.titleMedium)
+                Text(stringResource(R.string.temperature_unit), style = MaterialTheme.typography.titleMedium)
                 Spacer(modifier = Modifier.height(8.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     RadioButton(
                         selected = settingsState.temperatureUnit == TemperatureUnit.CELSIUS,
                         onClick = { viewModel.saveTemperatureUnit(TemperatureUnit.CELSIUS) }
                     )
-                    Text("Celsius")
+                    Text(stringResource(R.string.celsius))
                     Spacer(modifier = Modifier.width(16.dp))
                     RadioButton(
                         selected = settingsState.temperatureUnit == TemperatureUnit.FAHRENHEIT,
                         onClick = { viewModel.saveTemperatureUnit(TemperatureUnit.FAHRENHEIT) }
                     )
                     Spacer(modifier = Modifier.width(4.dp))
-                    Text("Fahrenheit")
+                    Text(stringResource(R.string.fahrenheit))
                 }
                 Spacer(modifier = Modifier.height(24.dp))
 
                 // Dark/Light Mode Toggle Section
-                Text("Theme", style = MaterialTheme.typography.titleMedium)
+                Text(stringResource(R.string.theme), style = MaterialTheme.typography.titleMedium)
                 Spacer(modifier = Modifier.height(16.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Spacer(modifier = Modifier.width(8.dp))
@@ -86,12 +87,15 @@ fun SettingsScreen() {
                         onCheckedChange = { viewModel.saveThemeSetting(!settingsState.darkThemeEnabled) }
                     )
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text(if (settingsState.darkThemeEnabled) "Dark Mode" else "Light Mode")
+                    Text(if (settingsState.darkThemeEnabled) stringResource(R.string.dark_mode) else stringResource(
+                        R.string.light_mode
+                    )
+                    )
                 }
                 Spacer(modifier = Modifier.height(24.dp))
 
                 // Api Key Section
-                Text("Weather Api Key", style = MaterialTheme.typography.titleMedium)
+                Text(stringResource(R.string.weather_api_key), style = MaterialTheme.typography.titleMedium)
                 Spacer(modifier = Modifier.height(16.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     TextField(
@@ -101,21 +105,21 @@ fun SettingsScreen() {
                         supportingText = {
                             Text(text = settingsState.apiKeyTextFieldState.errorMessage ?: "")
                         },
-                        label = { Text("Enter Key") },
+                        label = { Text(stringResource(R.string.enter_key)) },
                         modifier = Modifier.weight(1f)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Button(onClick = {
                         viewModel.saveApiKey()
                     }) {
-                        Text("Set")
+                        Text(stringResource(R.string.set))
                     }
                 }
             }
 
             is DataState.Error -> {
                 Text(
-                    text = "Error: ${screenState.message}",
+                    text = stringResource(R.string.error_generic, screenState.message),
                     color = MaterialTheme.colorScheme.error,
                     style = MaterialTheme.typography.bodyMedium
                 )

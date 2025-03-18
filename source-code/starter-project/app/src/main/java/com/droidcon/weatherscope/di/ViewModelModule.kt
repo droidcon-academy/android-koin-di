@@ -7,7 +7,7 @@ import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 val viewModelModule = module {
-    viewModel { CurrentWeatherViewModel(get(), get(), get()) }
-    viewModel { ForecastViewModel(get(), get()) }
-    viewModel { SettingsViewModel(appPreferences = get()) }
+    viewModel { CurrentWeatherViewModel(weatherDomain = get(), appPreferences = get(), getCurrentLocationUseCase = get(), stringResourcesProvider = get()) }
+    viewModel { ForecastViewModel(appPreferences = get(), getWeatherForecastUseCase = get(), stringResourcesProvider = get()) }
+    viewModel { SettingsViewModel(appPreferences = get(), stringResourcesProvider = get()) }
 }

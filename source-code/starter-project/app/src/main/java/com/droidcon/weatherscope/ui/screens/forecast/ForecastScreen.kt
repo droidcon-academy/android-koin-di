@@ -31,6 +31,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -79,12 +80,12 @@ fun ForecastScreen() {
                     ) {
                         Icon(
                             imageVector = Icons.Filled.Warning,
-                            contentDescription = "Error",
+                            contentDescription = stringResource(R.string.error),
                             tint = MaterialTheme.colorScheme.error,
                             modifier = Modifier.size(48.dp)
                         )
                         Text(
-                            text = "Error: $errorMessage",
+                            text = stringResource(R.string.error_generic, errorMessage),
                             color = MaterialTheme.colorScheme.error,
                             style = MaterialTheme.typography.bodyLarge,
                             textAlign = TextAlign.Center
@@ -92,7 +93,7 @@ fun ForecastScreen() {
                         Button(
                             onClick = { viewModel.loadForecast() }
                         ) {
-                            Text("Retry")
+                            Text(stringResource(R.string.retry))
                         }
                     }
                 }
@@ -158,7 +159,7 @@ fun ForecastCard(
                 ) {
                     Icon(
                         imageVector = Icons.Filled.KeyboardArrowDown,
-                        contentDescription = "Minimum temperature",
+                        contentDescription = stringResource(R.string.minimum_temperature),
                         tint = MaterialTheme.colorScheme.primary
                     )
                     Text(
@@ -175,7 +176,7 @@ fun ForecastCard(
 
                     Icon(
                         imageVector = Icons.Filled.KeyboardArrowUp,
-                        contentDescription = "Maximum temperature",
+                        contentDescription = stringResource(R.string.maximum_temperature),
                         tint = MaterialTheme.colorScheme.error
                     )
                     Text(

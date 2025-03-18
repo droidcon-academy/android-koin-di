@@ -6,9 +6,11 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
 import com.droidcon.weatherscope.common.AndroidPermissionChecker
 import com.droidcon.weatherscope.common.AppPreferences
+import com.droidcon.weatherscope.common.AppStringResourcesProvider
 import com.droidcon.weatherscope.common.GetCurrentLocationUseCase
 import com.droidcon.weatherscope.common.GetCurrentLocationUseCaseImpl
 import com.droidcon.weatherscope.common.PermissionChecker
+import com.droidcon.weatherscope.common.StringResourcesProvider
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 
@@ -20,4 +22,5 @@ val utilsModule = module {
     single { AppPreferences(dataStore = get()) }
     single<PermissionChecker> { AndroidPermissionChecker(get()) }
     single<GetCurrentLocationUseCase> { GetCurrentLocationUseCaseImpl(get(), get()) }
+    single<StringResourcesProvider> { AppStringResourcesProvider(androidContext().resources) }
 }

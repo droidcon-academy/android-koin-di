@@ -2,7 +2,9 @@ package com.droidcon.weatherscope.ui.screens.forecast
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.droidcon.weatherscope.R
 import com.droidcon.weatherscope.common.AppPreferences
+import com.droidcon.weatherscope.common.StringResourcesProvider
 import com.droidcon.weatherscope.common.TemperatureUnit
 import com.droidcon.weatherscope.common.toFahrenheit
 import com.droidcon.weatherscope.domain.GetWeatherForecastUseCase
@@ -20,7 +22,8 @@ import kotlin.math.roundToInt
 
 class ForecastViewModel(
     private val appPreferences: AppPreferences,
-    private val getWeatherForecastUseCase: GetWeatherForecastUseCase
+    private val getWeatherForecastUseCase: GetWeatherForecastUseCase,
+    private val stringResourcesProvider: StringResourcesProvider
 ) : ViewModel() {
 
     private val _dataState = MutableStateFlow<DataState<ForecastScreenState>>(DataState.Loading)
@@ -94,12 +97,15 @@ class ForecastViewModel(
                     Pair(forecastData, tempUnit)
                 }
                     .catch { exception ->
-                        _dataState.value = DataState.Error(exception.message ?: "Unknown error")
+                        _dataState.value = DataState.Error(exception.message ?: stringResourcesProvider.getString(R.string.unknown_error))
                     }
                     .collect { (forecastData, tempUnit) ->
                         _dataState.value = when (forecastData) {
                             is DataState.Error -> DataState.Error(
-                                "Error loading forecast data: ${forecastData.message}"
+                                stringResourcesProvider.getString(
+                                    R.string.error_loading_forecast_data,
+                                    forecastData.message
+                                )
                             )
 
                             DataState.Loading -> DataState.Loading
@@ -119,7 +125,7 @@ class ForecastViewModel(
                         }
                     }
             } catch (e: Exception) {
-                _dataState.value = DataState.Error(e.message ?: "Unknown error")
+                _dataState.value = DataState.Error(e.message ?: stringResourcesProvider.getString(R.string.unknown_error))
             }
         }
     }

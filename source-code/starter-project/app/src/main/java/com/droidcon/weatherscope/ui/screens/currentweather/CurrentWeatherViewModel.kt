@@ -2,11 +2,13 @@ package com.droidcon.weatherscope.ui.screens.currentweather
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.droidcon.weatherscope.R
 import com.droidcon.weatherscope.domain.WeatherDomain
 import com.droidcon.weatherscope.ui.common.DataState
 import com.droidcon.weatherscope.ui.common.TextFieldState
 import com.droidcon.weatherscope.common.AppPreferences
 import com.droidcon.weatherscope.common.GetCurrentLocationUseCase
+import com.droidcon.weatherscope.common.StringResourcesProvider
 import com.droidcon.weatherscope.common.TemperatureUnit
 import com.droidcon.weatherscope.common.toFahrenheit
 import com.droidcon.weatherscope.domain.models.CurrentWeather
@@ -23,7 +25,8 @@ import kotlin.math.roundToInt
 class CurrentWeatherViewModel(
     private val weatherDomain: WeatherDomain,
     private val appPreferences: AppPreferences,
-    private val getCurrentLocationUseCase: GetCurrentLocationUseCase
+    private val getCurrentLocationUseCase: GetCurrentLocationUseCase,
+    private val stringResourcesProvider: StringResourcesProvider
 ) : ViewModel() {
 
     private val _dataState =
@@ -92,11 +95,19 @@ class CurrentWeatherViewModel(
                     Pair(weatherData, tempUnit)
                 }
                     .catch { exception ->
-                        _dataState.value = DataState.Error(exception.message ?: "Unknown error")
+                        _dataState.value = DataState.Error(
+                            exception.message
+                                ?: stringResourcesProvider.getString(R.string.unknown_error)
+                        )
                     }
                     .collect { (weatherData, tempUnit) ->
                         _dataState.value = when (weatherData) {
-                            is DataState.Error -> DataState.Error("Error loading weather data: ${weatherData.message}")
+                            is DataState.Error -> DataState.Error(
+                                stringResourcesProvider.getString(
+                                    R.string.error_loading_weather_data,
+                                    weatherData.message
+                                )
+                            )
 
                             DataState.Loading -> DataState.Loading
                             is DataState.Success -> {
@@ -111,7 +122,9 @@ class CurrentWeatherViewModel(
                         }
                     }
             } catch (e: Exception) {
-                _dataState.value = DataState.Error(e.message ?: "Unknown error")
+                _dataState.value = DataState.Error(
+                    e.message ?: stringResourcesProvider.getString(R.string.unknown_error)
+                )
             }
         }
     }
@@ -122,7 +135,12 @@ class CurrentWeatherViewModel(
             appPreferences.setCurrentCityLon(lon)
         } catch (e: Exception) {
             _dataState.value =
-                DataState.Error("Error saving lat lon: ${(e.message ?: "Unknown error")}")
+                DataState.Error(
+                    stringResourcesProvider.getString(
+                        R.string.error_saving_lat_lon,
+                        (e.message ?: stringResourcesProvider.getString(R.string.unknown_error))
+                    )
+                )
         }
     } // loadWeather() is listening for changes in appPreferences data since init()
 
@@ -136,7 +154,7 @@ class CurrentWeatherViewModel(
                             currentState.state.copy(
                                 cityTextFieldState = TextFieldState(
                                     value = currentState.state.cityTextFieldState.value,
-                                    errorMessage = "city name cannot be blank",
+                                    errorMessage = stringResourcesProvider.getString(R.string.city_name_cannot_be_blank),
                                     isError = true
                                 )
                             )
@@ -147,13 +165,17 @@ class CurrentWeatherViewModel(
                                 when (locationData) {
                                     is DataState.Error -> {
                                         _dataState.value = DataState.Error(
-                                            "Error loading weather data: ${locationData.message}"
+                                            stringResourcesProvider.getString(
+                                                R.string.error_loading_weather_data,
+                                                locationData.message
+                                            )
                                         )
                                     }
 
                                     DataState.Loading -> {
                                         _dataState.value = DataState.Loading
                                     }
+
                                     is DataState.Success -> setLocationCoordinates(
                                         lat = locationData.state.lat,
                                         lon = locationData.state.lon
@@ -181,7 +203,7 @@ class CurrentWeatherViewModel(
             _dataState.value = DataState.Success(
                 CurrentWeatherScreenState(
                     cityTextFieldState = TextFieldState(
-                        errorMessage = "city name cannot be blank",
+                        errorMessage = stringResourcesProvider.getString(R.string.city_name_cannot_be_blank),
                         isError = true
                     )
                 )
@@ -199,7 +221,7 @@ class CurrentWeatherViewModel(
                             currentState.state.copy(
                                 latTextFieldState = TextFieldState(
                                     value = currentState.state.latTextFieldState.value,
-                                    errorMessage = "latitude cannot be blank",
+                                    errorMessage = stringResourcesProvider.getString(R.string.latitude_cannot_be_blank),
                                     isError = true
                                 )
                             )
@@ -209,7 +231,7 @@ class CurrentWeatherViewModel(
                             currentState.state.copy(
                                 lonTextFieldState = TextFieldState(
                                     value = currentState.state.lonTextFieldState.value,
-                                    errorMessage = "longitude cannot be blank",
+                                    errorMessage = stringResourcesProvider.getString(R.string.longitude_cannot_be_blank),
                                     isError = true
                                 )
                             )
@@ -224,7 +246,13 @@ class CurrentWeatherViewModel(
             } catch (e: Exception) {
                 if (currentState is DataState.Success) {
                     _dataState.value =
-                        DataState.Error(message = "Failed to get weather for coordinates: ${e.message} \nPlease retry")
+                        DataState.Error(
+                            message = stringResourcesProvider.getString(
+                                R.string.failed_to_get_weather_for_coordinates_please_retry,
+                                (e.message
+                                    ?: stringResourcesProvider.getString(R.string.unknown_error))
+                            )
+                        )
                 }
             }
         }
@@ -233,7 +261,7 @@ class CurrentWeatherViewModel(
             _dataState.value = DataState.Success(
                 CurrentWeatherScreenState(
                     cityTextFieldState = TextFieldState(
-                        errorMessage = "city name cannot be blank",
+                        errorMessage = stringResourcesProvider.getString(R.string.city_name_cannot_be_blank),
                         isError = true
                     )
                 )
@@ -330,7 +358,10 @@ class CurrentWeatherViewModel(
             getCurrentLocationUseCase.execute()
                 .catch { exception ->
                     _dataState.value = DataState.Error(
-                        "Error loading device coordinates: ${exception.message ?: "Unknown error occurred"}"
+                        stringResourcesProvider.getString(
+                            R.string.error_loading_device_coordinates,
+                            exception.message ?: stringResourcesProvider.getString(R.string.unknown_error)
+                        )
                     )
                 }
                 .collectLatest { result ->
@@ -340,7 +371,10 @@ class CurrentWeatherViewModel(
                         },
                         onFailure = { exception ->
                             _dataState.value = DataState.Error(
-                                "Error loading device coordinates: ${exception.message ?: "Unknown error occurred"}"
+                                stringResourcesProvider.getString(
+                                    R.string.error_loading_device_coordinates,
+                                    exception.message ?: stringResourcesProvider.getString(R.string.unknown_error)
+                                )
                             )
                         }
                     )

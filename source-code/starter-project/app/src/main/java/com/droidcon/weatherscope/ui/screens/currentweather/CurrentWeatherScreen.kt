@@ -35,6 +35,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
@@ -94,7 +95,7 @@ fun CurrentWeatherScreen() {
             onClick = { viewModel.getCurrentLocationCoordinates() },
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Use Current GPS")
+            Text(stringResource(R.string.use_current_gps))
         }
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -106,7 +107,7 @@ fun CurrentWeatherScreen() {
                 supportingText = {
                     Text(text = weatherState?.latTextFieldState?.errorMessage ?: "")
                 },
-                label = { Text("Latitude") },
+                label = { Text(stringResource(R.string.latitude)) },
                 modifier = Modifier.width(480.dp)
             )
 
@@ -120,14 +121,14 @@ fun CurrentWeatherScreen() {
                     supportingText = {
                         Text(text = weatherState?.lonTextFieldState?.errorMessage ?: "")
                     },
-                    label = { Text("Longitude") },
+                    label = { Text(stringResource(R.string.longitude)) },
                     modifier = Modifier
                         .width(480.dp)
                         .weight(1f)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Button(onClick = { viewModel.setCurrentCityCoordinateLocation() }) {
-                    Text("Search")
+                    Text(stringResource(R.string.search))
                 }
             }
         }
@@ -141,12 +142,12 @@ fun CurrentWeatherScreen() {
                 supportingText = {
                     Text(text = weatherState?.cityTextFieldState?.errorMessage ?: "")
                 },
-                label = { Text("Enter City") },
+                label = { Text(stringResource(R.string.enter_city)) },
                 modifier = Modifier.weight(1f)
             )
             Spacer(modifier = Modifier.width(8.dp))
             Button(onClick = { viewModel.setCurrentCityNameLocation() }) {
-                Text("Search")
+                Text(stringResource(R.string.search))
             }
         }
     }
@@ -214,14 +215,14 @@ fun WeatherCard(
                 // Temperature
                 WeatherInfoItem(
                     icon = Icons.Filled.Info,
-                    label = "Temperature",
+                    label = stringResource(R.string.temperature),
                     value = weatherData.temperature
                 )
 
                 // Humidity
                 WeatherInfoItem(
                     icon = Icons.Filled.Info,
-                    label = "Humidity",
+                    label = stringResource(R.string.humidity),
                     value = weatherData.humidity
                 )
             }
