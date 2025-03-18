@@ -42,4 +42,6 @@
     <string name="failed_to_update_api_key">Failed to update API key: %1$s</string>
     <string name="failed_to_update_theme">Failed to update theme: %1$s</string>
     <string name="api_key_cannot_be_empty">API key cannot be empty</string>
+    <string name="hide_api_key">Hide API Key</string>
+    <string name="show_api_key">Show API Key</string>
 </resources>
