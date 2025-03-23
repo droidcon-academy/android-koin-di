@@ -1,5 +1,6 @@
 package com.droidcon.weatherscope.ui.screens.forecast
 
+import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -35,6 +36,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModelStoreOwner
 import coil.compose.AsyncImage
 import com.droidcon.weatherscope.R
 import com.droidcon.weatherscope.ui.common.DataState
@@ -43,7 +45,8 @@ import java.time.format.DateTimeFormatter
 
 @Composable
 fun ForecastScreen() {
-    val viewModel: ForecastViewModel = koinViewModel()
+    val activity = LocalActivity.current as ViewModelStoreOwner
+    val viewModel: ForecastViewModel = koinViewModel(viewModelStoreOwner = activity)
     val state by viewModel.dataState.collectAsState()
     val screenState = state
 
