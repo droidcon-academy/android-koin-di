@@ -13,10 +13,13 @@ import org.koin.android.ext.android.inject
 import android.Manifest
 import android.content.pm.PackageManager
 import androidx.core.content.ContextCompat
+import org.koin.android.ext.android.getKoin
+import org.koin.core.qualifier.named
 
 class MainActivity : ComponentActivity() {
 
     private val appPreferences: AppPreferences by inject()
+    val forecastScope = getKoin().createScope("FORECAST_SCOPE_ID", named("ForecastScope"))
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,6 +41,12 @@ class MainActivity : ComponentActivity() {
                 )
             )
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+
+        forecastScope.close()
     }
 
     private val locationPermissionRequest = registerForActivityResult(

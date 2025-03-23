@@ -36,17 +36,16 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.ViewModelStoreOwner
 import coil.compose.AsyncImage
+import com.droidcon.weatherscope.MainActivity
 import com.droidcon.weatherscope.R
 import com.droidcon.weatherscope.ui.common.DataState
-import org.koin.androidx.compose.koinViewModel
 import java.time.format.DateTimeFormatter
 
 @Composable
 fun ForecastScreen() {
-    val activity = LocalActivity.current as ViewModelStoreOwner
-    val viewModel: ForecastViewModel = koinViewModel(viewModelStoreOwner = activity)
+    val forecastScope = (LocalActivity.current as MainActivity).forecastScope
+    val viewModel: ForecastViewModel = forecastScope.get()
     val state by viewModel.dataState.collectAsState()
     val screenState = state
 
