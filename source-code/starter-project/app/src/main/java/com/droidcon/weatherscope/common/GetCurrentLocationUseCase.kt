@@ -7,6 +7,7 @@ import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Looper
+import android.util.Log
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -60,56 +61,49 @@ class GetCurrentLocationUseCaseImpl(
      * if unavailable, it requests a single update.
      */
     @SuppressLint("MissingPermission")
-    private suspend fun getDeviceLocation(): Location? = suspendCancellableCoroutine { continuation ->
-        val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+    private suspend fun getDeviceLocation(): Location? =
+        suspendCancellableCoroutine { continuation ->
+            val locationManager =
+                context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
-        // Obtain all enabled providers.
-        val providers = locationManager.getProviders(true)
-        if (providers.isEmpty()) {
-            continuation.resume(null)
-            return@suspendCancellableCoroutine
-        }
+            // Try to obtain the best (most accurate) last known location.
+            var bestLocation: Location? = null
 
-        // Try to obtain the best (most accurate) last known location.
-        var bestLocation: Location? = null
-        for (provider in providers) {
-            val location = locationManager.getLastKnownLocation(provider)
-            if (location != null && (bestLocation == null || location.accuracy < bestLocation.accuracy)) {
+            val location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+            if (location != null) {
                 bestLocation = location
             }
-        }
 
-        // If we got a previous location, return it immediately.
-        if (bestLocation != null) {
-            continuation.resume(bestLocation)
-            return@suspendCancellableCoroutine
-        }
+            // If we got a previous location, return it immediately.
+            if (bestLocation != null) {
+                continuation.resume(bestLocation)
+                return@suspendCancellableCoroutine
+            }
 
-        // Otherwise, request a single update.
-        var resumed = false  // Guard to ensure we resume the coroutine only once.
-        val locationListener = object : LocationListener {
-            override fun onLocationChanged(location: Location) {
-                if (!resumed) {
-                    resumed = true
-                    locationManager.removeUpdates(this)
-                    continuation.resume(location)
+            // Otherwise, request a single update.
+            var resumed = false  // Guard to ensure we resume the coroutine only once.
+            val locationListener = object : LocationListener {
+                override fun onLocationChanged(location: Location) {
+                    if (!resumed) {
+                        resumed = true
+                        locationManager.removeUpdates(this)
+                        continuation.resume(location)
+                    }
                 }
             }
-        }
 
-        // Choose the first available provider, or fallback to GPS.
-        val bestProvider = providers.firstOrNull() ?: LocationManager.GPS_PROVIDER
-        locationManager.requestLocationUpdates(
-            bestProvider,
-            0L,
-            0f,
-            locationListener,
-            Looper.getMainLooper()
-        )
+            val bestProvider = LocationManager.GPS_PROVIDER
+            locationManager.requestLocationUpdates(
+                bestProvider,
+                0L,
+                0f,
+                locationListener,
+                Looper.getMainLooper()
+            )
 
-        // Ensure that if the coroutine is cancelled, we stop receiving location updates.
-        continuation.invokeOnCancellation {
-            locationManager.removeUpdates(locationListener)
+            // Ensure that if the coroutine is cancelled, we stop receiving location updates.
+            continuation.invokeOnCancellation {
+                locationManager.removeUpdates(locationListener)
+            }
         }
-    }
 }
