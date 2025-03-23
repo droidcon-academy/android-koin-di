@@ -99,41 +99,6 @@ fun CurrentWeatherScreen() {
         }
         Spacer(modifier = Modifier.height(16.dp))
 
-        Column {
-            TextField(
-                value = weatherState?.latTextFieldState?.value ?: "",
-                onValueChange = { viewModel.onLocationLatValueChanged(it) },
-                isError = weatherState?.latTextFieldState?.isError ?: false,
-                supportingText = {
-                    Text(text = weatherState?.latTextFieldState?.errorMessage ?: "")
-                },
-                label = { Text(stringResource(R.string.latitude)) },
-                modifier = Modifier.width(480.dp)
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                TextField(
-                    value = weatherState?.lonTextFieldState?.value ?: "",
-                    onValueChange = { viewModel.onLocationLonValueChanged(it) },
-                    isError = weatherState?.lonTextFieldState?.isError ?: false,
-                    supportingText = {
-                        Text(text = weatherState?.lonTextFieldState?.errorMessage ?: "")
-                    },
-                    label = { Text(stringResource(R.string.longitude)) },
-                    modifier = Modifier
-                        .width(480.dp)
-                        .weight(1f)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Button(onClick = { viewModel.setCurrentCityCoordinateLocation() }) {
-                    Text(stringResource(R.string.search))
-                }
-            }
-        }
-        Spacer(modifier = Modifier.height(16.dp))
-
         Row(verticalAlignment = Alignment.CenterVertically) {
             TextField(
                 value = weatherState?.cityTextFieldState?.value ?: "",
