@@ -16,6 +16,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -44,7 +45,7 @@ import com.droidcon.weatherscope.ui.common.DataState
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun CurrentWeatherScreen() {
+fun CurrentWeatherScreen(onNavigateToSettings: (String) -> Unit = {}) {
     val viewModel: CurrentWeatherViewModel = koinViewModel()
     val state by viewModel.dataState.collectAsState()
     val screenState = state
@@ -113,6 +114,21 @@ fun CurrentWeatherScreen() {
             Spacer(modifier = Modifier.width(8.dp))
             Button(onClick = { viewModel.setCurrentCityNameLocation() }) {
                 Text(stringResource(R.string.search))
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Button(onClick = { onNavigateToSettings(weatherState?.data?.locationName ?: "") }) {
+                Text(stringResource(R.string.go_to_settings))
+                Spacer(modifier = Modifier.width(8.dp))
+
+                Icon(
+                    imageVector = Icons.Default.Settings,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.inverseOnSurface
+                )
             }
         }
     }

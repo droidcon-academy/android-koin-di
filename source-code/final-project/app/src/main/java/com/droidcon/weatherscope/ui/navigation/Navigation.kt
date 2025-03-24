@@ -22,10 +22,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.droidcon.weatherscope.R
 import com.droidcon.weatherscope.ui.screens.currentweather.CurrentWeatherScreen
 import com.droidcon.weatherscope.ui.screens.forecast.ForecastScreen
@@ -41,20 +43,19 @@ fun AppNavigation() {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
     val bottomNavItems = listOf(
-        BottomNavItem.Forecast,
         BottomNavItem.Home,
-        BottomNavItem.Settings
+        BottomNavItem.Forecast
     )
     val navTitle = bottomNavItems.firstOrNull { it.route == currentDestination?.route }?.title
 
     Scaffold(
         topBar = {
-            if (currentDestination?.route != Routes.SPLASH ) TopAppBar(
+            if (currentDestination?.route == Routes.CURRENT_WEATHER || currentDestination?.route == Routes.FORECAST ) TopAppBar(
                 title = { navTitle?.let{ Text(stringResource(id = navTitle)) } ?: Unit },
             )
         },
         bottomBar = {
-            if (currentDestination?.route != Routes.SPLASH ) NavigationBar {
+            if (currentDestination?.route == Routes.CURRENT_WEATHER || currentDestination?.route == Routes.FORECAST ) NavigationBar {
                 bottomNavItems.forEach { item ->
                     NavigationBarItem(
                         icon = {
@@ -92,10 +93,21 @@ fun AppNavigation() {
                 ForecastScreen()
             }
             composable(Routes.CURRENT_WEATHER) {
-                CurrentWeatherScreen()
+                CurrentWeatherScreen(onNavigateToSettings = { paramValue ->
+                    navController.navigate(Routes.createSettingsRoute(paramValue))
+                }
+                )
             }
-            composable(Routes.SETTINGS) {
-                SettingsScreen()
+            composable(
+                route = Routes.SETTINGS_WITH_PARAM,
+                arguments = listOf(
+                    navArgument("paramName") { type = NavType.StringType }
+                )
+            ) { backStackEntry ->
+                val paramValue = backStackEntry.arguments?.getString("paramName") ?: ""
+                SettingsScreen(selectedCity = paramValue) {
+                    navController.popBackStack()
+                }
             }
         }
     }
@@ -111,5 +123,4 @@ sealed class BottomNavItem(
     data object Home :
         BottomNavItem(Routes.CURRENT_WEATHER, title = R.string.title_home, navText = R.string.home, Icons.Filled.Home)
     data object Forecast : BottomNavItem(Routes.FORECAST, title = R.string.title_forecast, navText = R.string.forecast, Icons.Default.List)
-    data object Settings : BottomNavItem(Routes.SETTINGS, title = R.string.title_settings, navText = R.string.settings, Icons.Default.Settings)
 }

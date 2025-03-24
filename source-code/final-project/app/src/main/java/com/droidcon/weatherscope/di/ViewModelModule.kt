@@ -9,7 +9,8 @@ import org.koin.dsl.module
 
 val viewModelModule = module {
     viewModel { CurrentWeatherViewModel(weatherDomain = get(), appPreferences = get(), getCurrentLocationUseCase = get(), stringResourcesProvider = get()) }
-    viewModel { SettingsViewModel(appPreferences = get(), stringResourcesProvider = get()) }
+    viewModel { params ->
+        SettingsViewModel(appPreferences = get(), stringResourcesProvider = get(), selectedCity = params.get<String>()) }
     scope(named("ForecastScope")) {
         scoped { ForecastViewModel(get(), get(), get()) }
     }
