@@ -1,6 +1,5 @@
 package com.droidcon.weatherscope.ui.screens.currentweather
 
-import RotatingSettingsIconAnimation
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -34,7 +33,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -92,7 +90,7 @@ fun CurrentWeatherScreen(onNavigateToSettings: (String) -> Unit = {}) {
 
         val weatherState = (screenState as? DataState.Success)?.state
 
-        Spacer(modifier = Modifier.height(48.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
         Button(
             onClick = { viewModel.getCurrentLocationCoordinates() },
@@ -100,7 +98,7 @@ fun CurrentWeatherScreen(onNavigateToSettings: (String) -> Unit = {}) {
         ) {
             Text(stringResource(R.string.use_current_gps))
         }
-        Spacer(modifier = Modifier.height(36.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
         Row(verticalAlignment = Alignment.CenterVertically) {
             TextField(
@@ -119,18 +117,17 @@ fun CurrentWeatherScreen(onNavigateToSettings: (String) -> Unit = {}) {
             }
         }
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
-        Row {
+        Row(verticalAlignment = Alignment.CenterVertically) {
             Button(onClick = { onNavigateToSettings(weatherState?.data?.locationName ?: "") }) {
                 Text(stringResource(R.string.go_to_settings))
                 Spacer(modifier = Modifier.width(8.dp))
 
                 Icon(
                     imageVector = Icons.Default.Settings,
-                    contentDescription = "Settings Icon",
-                    tint = MaterialTheme.colorScheme.inverseOnSurface,
-                    modifier = Modifier.rotate(RotatingSettingsIconAnimation())
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.inverseOnSurface
                 )
             }
         }
