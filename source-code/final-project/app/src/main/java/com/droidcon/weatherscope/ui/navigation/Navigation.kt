@@ -2,14 +2,18 @@ package com.droidcon.weatherscope.ui.navigation
 
 import android.annotation.SuppressLint
 import androidx.annotation.StringRes
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
@@ -20,8 +24,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -35,7 +41,6 @@ import com.droidcon.weatherscope.ui.screens.settings.SettingsScreen
 import com.droidcon.weatherscope.ui.screens.splash.SplashScreen
 
 @SuppressLint("RestrictedApi")
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppNavigation() {
     val navController = rememberNavController()
@@ -50,9 +55,7 @@ fun AppNavigation() {
 
     Scaffold(
         topBar = {
-            if (currentDestination?.route == Routes.CURRENT_WEATHER || currentDestination?.route == Routes.FORECAST ) TopAppBar(
-                title = { navTitle?.let{ Text(stringResource(id = navTitle)) } ?: Unit },
-            )
+            provideTopAppBar(currentRoute = currentDestination?.route, navTitle = navTitle, navController = navController)
         },
         bottomBar = {
             if (currentDestination?.route == Routes.CURRENT_WEATHER || currentDestination?.route == Routes.FORECAST ) NavigationBar {
@@ -105,9 +108,7 @@ fun AppNavigation() {
                 )
             ) { backStackEntry ->
                 val paramValue = backStackEntry.arguments?.getString("paramName") ?: ""
-                SettingsScreen(selectedCity = paramValue) {
-                    navController.popBackStack()
-                }
+                SettingsScreen(selectedCity = paramValue)
             }
         }
     }
@@ -123,4 +124,32 @@ sealed class BottomNavItem(
     data object Home :
         BottomNavItem(Routes.CURRENT_WEATHER, title = R.string.title_home, navText = R.string.home, Icons.Filled.Home)
     data object Forecast : BottomNavItem(Routes.FORECAST, title = R.string.title_forecast, navText = R.string.forecast, Icons.Default.List)
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun provideTopAppBar(currentRoute: String?, navTitle: Int?, navController: NavController): Unit {
+    when {
+        currentRoute?.contains(Routes.SETTINGS) == true ->
+            TopAppBar(
+                title = {
+                    Row {
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("Settings")
+                    }
+                },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_back),
+                            contentDescription = "Back",
+                            modifier = Modifier.width(24.dp)
+                        )
+                    }
+                }
+            )
+        currentRoute != Routes.SPLASH ->  TopAppBar(
+            title = { navTitle?.let{ Text(stringResource(id = navTitle)) } ?: Unit },
+        )
+    }
 }
