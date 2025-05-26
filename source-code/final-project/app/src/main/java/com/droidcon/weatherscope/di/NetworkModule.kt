@@ -13,41 +13,42 @@ import okhttp3.OkHttpClient
 import okhttp3.Protocol
 import okhttp3.Response
 import okhttp3.ResponseBody.Companion.toResponseBody
-import org.koin.core.qualifier.named
-import org.koin.dsl.module
+import org.koin.core.annotation.Factory
+import org.koin.core.annotation.Module
+import org.koin.core.annotation.Named
+import org.koin.core.annotation.Single
 import retrofit2.Retrofit
 
-val networkModule = module {
-    single {
-        ApiKeyInterceptor(get())
-    }
+@Module
+object NetworkModule {
+    @Single
+    fun provideApiInterceptor(prefs: AppPreferences) = ApiKeyInterceptor(prefs)
 
-    // OkHttpClient
-    factory {
+    @Factory
+    fun provideOkHttpClient(interceptor: ApiKeyInterceptor) =
         OkHttpClient.Builder()
-            .addInterceptor(get<ApiKeyInterceptor>())
+            .addInterceptor(interceptor)
             .build()
-    }
 
-    // Weather API Retrofit instance
-    single(named("weatherRetrofit")) {
-        buildRetrofit(get(), baseUrl = OPEN_WEATHER_API)
-    }
+    @Single
+    @Named("weatherRetrofit")
+    fun provideWeatherRetrofit(client: OkHttpClient) =
+        buildRetrofit(client, OPEN_WEATHER_API)
 
-    // Geocoding API Retrofit instance
-    single(named("geocodingRetrofit")) {
-        buildRetrofit(get(), baseUrl = OPEN_WEATHER_GEOCODING_API)
-    }
+    @Single
+    @Named("geocodingRetrofit")
+    fun provideGeocodingRetrofit(client: OkHttpClient) =
+        buildRetrofit(client, OPEN_WEATHER_GEOCODING_API)
 
-    // Weather API service
-    single {
-        get<Retrofit>(named("weatherRetrofit")).create(WeatherApiService::class.java)
-    }
+    @Single
+    fun provideWeatherApiService(
+        @Named("weatherRetrofit") retrofit: Retrofit
+    ) = retrofit.create(WeatherApiService::class.java)
 
-    // Geocoding API service
-    single {
-        get<Retrofit>(named("geocodingRetrofit")).create(GeocodingApiService::class.java)
-    }
+    @Single
+    fun provideGeocodingService(
+        @Named("geocodingRetrofit") retrofit: Retrofit
+    ) = retrofit.create(GeocodingApiService::class.java)
 }
 
 class ApiKeyInterceptor(private val appPreferences: AppPreferences) : Interceptor {
