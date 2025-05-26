@@ -17,6 +17,8 @@ composeBom = "2025.03.00"
 
 koinAndroid = "4.0.4"
 koinAndroidxCompose = "4.0.4"
+koinAnnotations = "2.0.0"
+koinKspCompiler = "2.0.0"
 
 navigationCompose = "2.8.9"
 navigationRuntimeKtx = "2.8.9"
@@ -58,6 +60,8 @@ androidx-navigation-runtime-ktx = { group = "androidx.navigation", name = "navig
 
 koin-android = { module = "io.insert-koin:koin-android", version.ref = "koinAndroid" }
 koin-androidx-compose = { module = "io.insert-koin:koin-androidx-compose", version.ref = "koinAndroidxCompose" }
+koin-annotations = { module = "io.insert-koin:koin-annotations", version.ref = "koinAnnotations" }
+koin-ksp-compiler = { module = "io.insert-koin:koin-ksp-compiler", version.ref = "koinKspCompiler" }
 
 retrofit2 = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit2" }
 retrofit2-moshi = { group = "com.squareup.retrofit2", name = "converter-moshi", version.ref = "retrofit2" }

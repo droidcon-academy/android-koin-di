@@ -60,6 +60,8 @@ dependencies {
     // koin
     implementation(libs.koin.android)
     implementation(libs.koin.androidx.compose)
+    implementation(libs.koin.annotations)
+    ksp(libs.koin.ksp.compiler)
 
     // data store
     implementation(libs.androidx.datastore.preferences)
