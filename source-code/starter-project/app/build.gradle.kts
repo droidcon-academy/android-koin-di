@@ -47,6 +47,9 @@ android {
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            excludes.add("META-INF/LICENSE.md")
+            excludes.add("META-INF/LICENSE-notice.md")
+            excludes.add("META-INF/ASL-2.0.txt")
         }
     }
 
@@ -61,6 +64,8 @@ dependencies {
     implementation(libs.koin.android)
     implementation(libs.koin.androidx.compose)
     implementation(libs.koin.annotations)
+    implementation(libs.core.ktx)
+    implementation(libs.androidx.junit.ktx)
     ksp(libs.koin.ksp.compiler)
 
     // data store
@@ -83,6 +88,24 @@ dependencies {
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
     ksp(libs.androidx.room.compiler)
+
+    // Koin Unit Test
+    testImplementation(libs.koin.test.junit4)
+    testImplementation(libs.koin.android.test)
+    testImplementation(libs.koin.test)
+    testImplementation(libs.koin.test.junit5)
+    testImplementation(libs.mockk)
+    testImplementation(libs.truth)
+    testImplementation(libs.kotlinx.coroutines.test)
+
+    // Koin Instrumentation Test
+    androidTestImplementation(libs.koin.test.junit4)
+    androidTestImplementation(libs.koin.android.test)
+    androidTestImplementation(libs.koin.test)
+    androidTestImplementation(libs.koin.test.junit5)
+    androidTestImplementation(libs.mockk.android)
+    androidTestImplementation(libs.truth)
+    androidTestImplementation(libs.kotlinx.coroutines.test)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
