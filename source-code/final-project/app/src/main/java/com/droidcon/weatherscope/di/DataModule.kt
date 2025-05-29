@@ -16,14 +16,14 @@ object DataModule {
         AppDatabase.getDatabase(context)
 
     @Single
-    fun provideWeatherDao(database: AppDatabase) = database.weatherForecastDao()
+    fun provideWeatherDao(database: AppDatabase): WeatherForecastDao = database.weatherForecastDao()
 
     @Single
-    fun provideLocalSource(dao: WeatherForecastDao) = WeatherForecastLocalSource(dao)
+    fun provideLocalSource(dao: WeatherForecastDao): WeatherForecastLocalSource = WeatherForecastLocalSource(dao)
 
     @Single
     fun provideWeatherRepository(
         apiService: WeatherApiService,
         localSource: WeatherForecastLocalSource
-    ) = WeatherRepository(apiService, localSource)
+    ): WeatherRepository = WeatherRepository(apiService, localSource)
 }

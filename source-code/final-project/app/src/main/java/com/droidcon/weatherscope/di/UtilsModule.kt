@@ -11,10 +11,8 @@ import com.droidcon.weatherscope.common.GetCurrentLocationUseCase
 import com.droidcon.weatherscope.common.GetCurrentLocationUseCaseImpl
 import com.droidcon.weatherscope.common.PermissionChecker
 import com.droidcon.weatherscope.common.StringResourcesProvider
-import org.koin.android.ext.koin.androidContext
 import org.koin.core.annotation.Module
 import org.koin.core.annotation.Single
-import org.koin.dsl.module
 
 private const val APP_PREFERENCES_NAME = "app_settings"
 private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = APP_PREFERENCES_NAME)
