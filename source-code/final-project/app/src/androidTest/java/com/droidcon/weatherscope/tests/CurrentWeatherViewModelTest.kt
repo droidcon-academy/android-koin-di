@@ -2,18 +2,17 @@ package com.droidcon.weatherscope.tests
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.droidcon.weatherscope.KoinTestRule
-import com.droidcon.weatherscope.di.DataModule
-import com.droidcon.weatherscope.di.DomainModule
-import com.droidcon.weatherscope.di.NetworkModule
-import com.droidcon.weatherscope.di.UtilsModule
-import com.droidcon.weatherscope.di.ViewModelModule
+import com.droidcon.weatherscope.di.dataModule
+import com.droidcon.weatherscope.di.domainModule
+import com.droidcon.weatherscope.di.networkModule
+import com.droidcon.weatherscope.di.utilsModule
+import com.droidcon.weatherscope.di.viewModelModule
 import com.droidcon.weatherscope.ui.common.DataState
 import com.droidcon.weatherscope.ui.screens.currentweather.CurrentWeatherViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
-import org.koin.ksp.generated.module
 import org.koin.test.KoinTest
 import org.koin.test.inject
 import org.junit.Test
@@ -28,11 +27,11 @@ class CurrentWeatherViewModelTest : KoinTest {
     @get:Rule
     val koinTestRule = KoinTestRule(
         modules = listOf(
-            ViewModelModule.module,
-            UtilsModule.module,
-            NetworkModule.module,
-            DomainModule.module,
-            DataModule.module
+            viewModelModule,
+            utilsModule,
+            networkModule,
+            domainModule,
+            dataModule
         )
     )
 

@@ -1,14 +1,13 @@
 package com.droidcon.weatherscope
 
-import com.droidcon.weatherscope.di.DataModule
-import com.droidcon.weatherscope.di.DomainModule
-import com.droidcon.weatherscope.di.NetworkModule
-import com.droidcon.weatherscope.di.UtilsModule
-import com.droidcon.weatherscope.di.ViewModelModule
+import com.droidcon.weatherscope.di.dataModule
+import com.droidcon.weatherscope.di.domainModule
+import com.droidcon.weatherscope.di.networkModule
+import com.droidcon.weatherscope.di.utilsModule
+import com.droidcon.weatherscope.di.viewModelModule
 import org.junit.Test
 
 import org.junit.Assert.*
-import org.koin.ksp.generated.module
 import org.koin.test.KoinTest
 import org.koin.test.verify.verify
 
@@ -25,10 +24,10 @@ class ExampleUnitTest: KoinTest {
 
 //    @Test
 //    fun checkAllModules() {
-//        ViewModelModule.module.verify()
-//        UtilsModule.module.verify()
-//        NetworkModule.module.verify()
-//        DomainModule.module.verify()
-//        DataModule.module.verify()
+//        viewModelModule.verify()
+//        utilsModule.verify()
+//        networkModule.verify()
+//        domainModule.verify()
+//        dataModule.verify()
 //    }
 }

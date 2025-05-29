@@ -6,7 +6,7 @@ import com.droidcon.weatherscope.common.AppPreferences
 import com.droidcon.weatherscope.common.GetCurrentLocationUseCase
 import com.droidcon.weatherscope.common.PermissionChecker
 import com.droidcon.weatherscope.common.StringResourcesProvider
-import com.droidcon.weatherscope.di.UtilsModule
+import com.droidcon.weatherscope.di.utilsModule
 import io.mockk.mockkClass
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
@@ -16,7 +16,6 @@ import org.junit.Rule
 import org.junit.Test
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
-import org.koin.ksp.generated.module
 import org.koin.test.KoinTest
 import org.koin.test.inject
 import org.koin.test.mock.MockProviderRule
@@ -34,7 +33,7 @@ class LocationUseCaseTest : KoinTest {
     @Before
     fun setup() {
         startKoin {
-            modules(UtilsModule.module)
+            modules(utilsModule)
         }
         declare<GetCurrentLocationUseCase> {
             // Provide a fake implementation for testing

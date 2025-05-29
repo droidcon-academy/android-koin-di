@@ -71,7 +71,7 @@ class WeatherDomainInstrumentTest: KoinTest {
     @get:Rule
     val koinTestRule = KoinTestRule(
         modules = listOf(
-            instrumentedTestModule, // instead of DomainModule.module
+            instrumentedTestModule, // instead of domainModule
         )
     )
 
