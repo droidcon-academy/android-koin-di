@@ -21,6 +21,7 @@ import com.droidcon.weatherscope.common.GetCurrentLocationUseCaseImpl
 import com.droidcon.weatherscope.common.StringResourcesProvider
 import com.droidcon.weatherscope.data.repositories.WeatherRepository
 import com.droidcon.weatherscope.domain.GetCurrentWeatherUseCase
+import com.droidcon.weatherscope.domain.GetCurrentWeatherUseCaseImpl
 import com.droidcon.weatherscope.domain.GetWeatherForecastUseCase
 import com.droidcon.weatherscope.domain.WeatherDomain
 import com.droidcon.weatherscope.ui.screens.currentweather.CurrentWeatherViewModel
@@ -93,7 +94,7 @@ val ComponentActivity.weatherRepository: WeatherRepository
 // Extension function to create ViewModel
 fun ComponentActivity.createCurrentWeatherViewModel(): CurrentWeatherViewModel {
     return CurrentWeatherViewModel(
-        weatherDomain = WeatherDomain(GetCurrentWeatherUseCase(weatherRepository)),
+        weatherDomain = WeatherDomain(GetCurrentWeatherUseCaseImpl(weatherRepository)),
         appPreferences = this.appPreferences,
         getCurrentLocationUseCase = this.getCurrentLocationUseCase,
         stringResourcesProvider = this.stringResourcesProvider

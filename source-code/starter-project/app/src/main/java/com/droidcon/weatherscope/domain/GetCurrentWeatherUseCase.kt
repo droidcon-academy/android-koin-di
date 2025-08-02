@@ -9,9 +9,9 @@ import com.droidcon.weatherscope.common.capitalize
 import kotlinx.coroutines.flow.Flow
 import java.net.URL
 
-class GetCurrentWeatherUseCase(private val currentWeatherRepository: WeatherRepository) {
+class GetCurrentWeatherUseCaseImpl(private val currentWeatherRepository: WeatherRepository): GetCurrentWeatherUseCase {
 
-    suspend fun getCurrentWeather(cityName: String): Flow<DataState<CurrentWeather>> {
+    override fun getCurrentWeather(cityName: String): Flow<DataState<CurrentWeather>> {
         val response = currentWeatherRepository.getCurrentWeatherByCity(
             city = cityName
         )
@@ -21,7 +21,10 @@ class GetCurrentWeatherUseCase(private val currentWeatherRepository: WeatherRepo
         }
     }
 
-    suspend fun getCurrentWeather(latitude: Double, longitude: Double): Flow<DataState<CurrentWeather>> {
+    override fun getCurrentWeather(
+        latitude: Double,
+        longitude: Double
+    ): Flow<DataState<CurrentWeather>> {
         val response = currentWeatherRepository.getCurrentWeatherByCoordinates(
             lat = latitude,
             lon = longitude
@@ -63,4 +66,9 @@ fun CurrentWeatherResponse.toDomain(): CurrentWeather {
         humidity = main.humidity.toDouble(),
         iconLink = iconUrl
     )
+}
+
+interface GetCurrentWeatherUseCase {
+    fun getCurrentWeather(cityName: String): Flow<DataState<CurrentWeather>>
+    fun getCurrentWeather(latitude: Double, longitude: Double): Flow<DataState<CurrentWeather>>
 }
