@@ -1,5 +1,6 @@
 package com.droidcon.weatherscope.ui.screens.forecast
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.droidcon.weatherscope.R
@@ -30,6 +31,7 @@ class ForecastViewModel(
     val dataState: StateFlow<DataState<ForecastScreenState>> = _dataState
 
     init {
+        Log.d("ForecastViewModel", "ForecastViewModel initialized")
         loadForecast()
     }
 

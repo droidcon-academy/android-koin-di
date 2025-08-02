@@ -11,16 +11,35 @@ import com.droidcon.weatherscope.common.GetCurrentLocationUseCase
 import com.droidcon.weatherscope.common.GetCurrentLocationUseCaseImpl
 import com.droidcon.weatherscope.common.PermissionChecker
 import com.droidcon.weatherscope.common.StringResourcesProvider
-import org.koin.android.ext.koin.androidContext
-import org.koin.dsl.module
+import org.koin.core.annotation.Module
+import org.koin.core.annotation.Single
 
 private const val APP_PREFERENCES_NAME = "app_settings"
 private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = APP_PREFERENCES_NAME)
 
-val utilsModule = module {
-    single<DataStore<Preferences>> { androidContext().dataStore }
-    single { AppPreferences(dataStore = get()) }
-    single<PermissionChecker> { AndroidPermissionChecker(get()) }
-    single<GetCurrentLocationUseCase> { GetCurrentLocationUseCaseImpl(get(), get()) }
-    single<StringResourcesProvider> { AppStringResourcesProvider(androidContext().resources) }
+@Module
+object UtilsModule {
+
+    @Single
+    fun provideDataStore(context: Context): DataStore<Preferences> =
+        context.dataStore
+
+    @Single
+    fun provideAppPreferences(dataStore: DataStore<Preferences>): AppPreferences =
+        AppPreferences(dataStore)
+
+    @Single
+    fun providePermissionChecker(context: Context): PermissionChecker =
+        AndroidPermissionChecker(context)
+
+    @Single
+    fun provideLocationUseCase(
+        checker: PermissionChecker,
+        context: Context
+    ): GetCurrentLocationUseCase =
+        GetCurrentLocationUseCaseImpl(context, checker)
+
+    @Single
+    fun provideStringResources(context: Context): StringResourcesProvider =
+        AppStringResourcesProvider(context.resources)
 }

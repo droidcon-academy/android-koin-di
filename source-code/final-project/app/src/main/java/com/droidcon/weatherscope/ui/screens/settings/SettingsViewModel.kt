@@ -14,7 +14,12 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
-class SettingsViewModel(private val appPreferences: AppPreferences, private val stringResourcesProvider: StringResourcesProvider, private val selectedCity: String) : ViewModel() {
+
+class SettingsViewModel(
+    private val appPreferences: AppPreferences,
+    private val stringResourcesProvider: StringResourcesProvider,
+    private val selectedCity: String
+) : ViewModel() {
     private val _dataState = MutableStateFlow<DataState<SettingsState>>(DataState.Loading)
     val dataState: StateFlow<DataState<SettingsState>> = _dataState
 
@@ -26,7 +31,7 @@ class SettingsViewModel(private val appPreferences: AppPreferences, private val 
                 appPreferences.isDarkTheme
             ) { temperatureUnit, apiKey, isDarkTheme ->
                 SettingsState(
-                    selectedCity = selectedCity,
+                    text = selectedCity,
                     apiKeyTextFieldState = TextFieldState(
                         value = apiKey,
                         isError = apiKey.isBlank(),

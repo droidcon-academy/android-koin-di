@@ -211,6 +211,64 @@ class CurrentWeatherViewModel(
         }
     }
 
+    fun setCurrentCityCoordinateLocation() {
+        val currentState = _dataState.value
+        viewModelScope.launch {
+            try {
+                if (currentState is DataState.Success) {
+                    if (currentState.state.latTextFieldState.value.isBlank()) {
+                        _dataState.value = DataState.Success(
+                            currentState.state.copy(
+                                latTextFieldState = TextFieldState(
+                                    value = currentState.state.latTextFieldState.value,
+                                    errorMessage = stringResourcesProvider.getString(R.string.latitude_cannot_be_blank),
+                                    isError = true
+                                )
+                            )
+                        )
+                    } else if (currentState.state.lonTextFieldState.value.isBlank()) {
+                        _dataState.value = DataState.Success(
+                            currentState.state.copy(
+                                lonTextFieldState = TextFieldState(
+                                    value = currentState.state.lonTextFieldState.value,
+                                    errorMessage = stringResourcesProvider.getString(R.string.longitude_cannot_be_blank),
+                                    isError = true
+                                )
+                            )
+                        )
+                    } else {
+                        setLocationCoordinates(
+                            lat = currentState.state.latTextFieldState.value.toDouble(),
+                            lon = currentState.state.lonTextFieldState.value.toDouble()
+                        )
+                    }
+                }
+            } catch (e: Exception) {
+                if (currentState is DataState.Success) {
+                    _dataState.value =
+                        DataState.Error(
+                            message = stringResourcesProvider.getString(
+                                R.string.failed_to_get_weather_for_coordinates_please_retry,
+                                (e.message
+                                    ?: stringResourcesProvider.getString(R.string.unknown_error))
+                            )
+                        )
+                }
+            }
+        }
+
+        if (currentState is DataState.Error) {
+            _dataState.value = DataState.Success(
+                CurrentWeatherScreenState(
+                    cityTextFieldState = TextFieldState(
+                        errorMessage = stringResourcesProvider.getString(R.string.city_name_cannot_be_blank),
+                        isError = true
+                    )
+                )
+            )
+        }
+    }
+
     fun onLocationTextValueChanged(newValue: String) {
         when (val currentState = _dataState.value) {
             is DataState.Error -> {
@@ -229,6 +287,62 @@ class CurrentWeatherViewModel(
                 _dataState.value = DataState.Success(
                     currentState.state.copy(
                         cityTextFieldState = TextFieldState(
+                            value = newValue
+                        )
+                    )
+                )
+            }
+
+            DataState.Loading -> Unit
+        }
+    }
+
+    fun onLocationLatValueChanged(newValue: String) {
+        when (val currentState = _dataState.value) {
+            is DataState.Error -> {
+
+                _dataState.value = DataState.Success(
+                    CurrentWeatherScreenState(
+                        latTextFieldState = TextFieldState(
+                            value = newValue
+                        )
+                    )
+                )
+            }
+
+            is DataState.Success -> {
+
+                _dataState.value = DataState.Success(
+                    currentState.state.copy(
+                        latTextFieldState = TextFieldState(
+                            value = newValue
+                        )
+                    )
+                )
+            }
+
+            DataState.Loading -> Unit
+        }
+    }
+
+    fun onLocationLonValueChanged(newValue: String) {
+        when (val currentState = _dataState.value) {
+            is DataState.Error -> {
+
+                _dataState.value = DataState.Success(
+                    CurrentWeatherScreenState(
+                        lonTextFieldState = TextFieldState(
+                            value = newValue
+                        )
+                    )
+                )
+            }
+
+            is DataState.Success -> {
+
+                _dataState.value = DataState.Success(
+                    currentState.state.copy(
+                        lonTextFieldState = TextFieldState(
                             value = newValue
                         )
                     )

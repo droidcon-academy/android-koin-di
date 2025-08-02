@@ -1,11 +1,11 @@
 package com.droidcon.weatherscope.di
 
+import com.droidcon.weatherscope.common.AppPreferences
 import com.droidcon.weatherscope.data.network.buildRetrofit
 import com.droidcon.weatherscope.data.network.services.openweather.GeocodingApiService
 import com.droidcon.weatherscope.data.network.services.openweather.OPEN_WEATHER_API
 import com.droidcon.weatherscope.data.network.services.openweather.OPEN_WEATHER_GEOCODING_API
 import com.droidcon.weatherscope.data.network.services.openweather.WeatherApiService
-import com.droidcon.weatherscope.common.AppPreferences
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor
@@ -13,41 +13,44 @@ import okhttp3.OkHttpClient
 import okhttp3.Protocol
 import okhttp3.Response
 import okhttp3.ResponseBody.Companion.toResponseBody
-import org.koin.core.qualifier.named
-import org.koin.dsl.module
+import org.koin.core.annotation.Factory
+import org.koin.core.annotation.Module
+import org.koin.core.annotation.Named
+import org.koin.core.annotation.Single
 import retrofit2.Retrofit
 
-val networkModule = module {
-    single {
-        ApiKeyInterceptor(get())
-    }
+@Module
+object NetworkModule {
 
-    // OkHttpClient
-    factory {
+    @Single
+    fun provideApiInterceptor(prefs: AppPreferences): ApiKeyInterceptor =
+        ApiKeyInterceptor(prefs)
+
+    @Factory
+    fun provideOkHttpClient(interceptor: ApiKeyInterceptor): OkHttpClient =
         OkHttpClient.Builder()
-            .addInterceptor(get<ApiKeyInterceptor>())
+            .addInterceptor(interceptor)
             .build()
-    }
 
-    // Weather API Retrofit instance
-    single(named("weatherRetrofit")) {
-        buildRetrofit(get(), baseUrl = OPEN_WEATHER_API)
-    }
+    @Single
+    @Named("weatherRetrofit")
+    fun provideWeatherRetrofit(client: OkHttpClient): Retrofit =
+        buildRetrofit(client, OPEN_WEATHER_API)
 
-    // Geocoding API Retrofit instance
-    single(named("geocodingRetrofit")) {
-        buildRetrofit(get(), baseUrl = OPEN_WEATHER_GEOCODING_API)
-    }
+    @Single
+    @Named("geocodingRetrofit")
+    fun provideGeocodingRetrofit(client: OkHttpClient): Retrofit =
+        buildRetrofit(client, OPEN_WEATHER_GEOCODING_API)
 
-    // Weather API service
-    single {
-        get<Retrofit>(named("weatherRetrofit")).create(WeatherApiService::class.java)
-    }
+    @Single
+    fun provideWeatherApiService(
+        @Named("weatherRetrofit") retrofit: Retrofit
+    ): WeatherApiService = retrofit.create(WeatherApiService::class.java)
 
-    // Geocoding API service
-    single {
-        get<Retrofit>(named("geocodingRetrofit")).create(GeocodingApiService::class.java)
-    }
+    @Single
+    fun provideGeocodingService(
+        @Named("geocodingRetrofit") retrofit: Retrofit
+    ): GeocodingApiService = retrofit.create(GeocodingApiService::class.java)
 }
 
 class ApiKeyInterceptor(private val appPreferences: AppPreferences) : Interceptor {

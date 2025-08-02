@@ -44,7 +44,9 @@ import java.time.format.DateTimeFormatter
 
 @Composable
 fun ForecastScreen() {
+    // Get the custom ForecastScope that we created in MainActivity
     val forecastScope = (LocalActivity.current as MainActivity).forecastScope
+    // Retrieve the ForecastViewModel from the custom scope
     val viewModel: ForecastViewModel = forecastScope.get()
     val state by viewModel.dataState.collectAsState()
     val screenState = state
@@ -146,7 +148,7 @@ fun ForecastCard(
             Column(
                 modifier = Modifier.weight(2f),
                 horizontalAlignment = Alignment.CenterHorizontally
-                ) {
+            ) {
                 // Weather description
                 Text(
                     text = forecast.weatherDescription,

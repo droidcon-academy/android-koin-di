@@ -1,6 +1,5 @@
 package com.droidcon.weatherscope.ui.screens.settings
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,23 +9,19 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -35,7 +30,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -43,11 +37,9 @@ import androidx.compose.ui.unit.dp
 import com.droidcon.weatherscope.R
 import com.droidcon.weatherscope.common.TemperatureUnit
 import com.droidcon.weatherscope.ui.common.DataState
-import com.droidcon.weatherscope.ui.navigation.Routes
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun SettingsScreen(selectedCity: String) {
     val viewModel: SettingsViewModel = koinViewModel(parameters = { parametersOf(selectedCity) })
@@ -58,7 +50,7 @@ fun SettingsScreen(selectedCity: String) {
         modifier = Modifier
             .fillMaxSize()
             .imePadding()
-            .padding(horizontal = 16.dp, vertical = 32.dp)
+            .padding(16.dp)
     ) {
         when (screenState) {
             is DataState.Loading -> {
@@ -93,10 +85,7 @@ fun SettingsScreen(selectedCity: String) {
                 Spacer(modifier = Modifier.height(24.dp))
 
                 // Dark/Light Mode Toggle Section
-                Text(
-                    stringResource(R.string.theme),
-                    style = MaterialTheme.typography.titleMedium
-                )
+                Text(stringResource(R.string.theme), style = MaterialTheme.typography.titleMedium)
                 Spacer(modifier = Modifier.height(16.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Spacer(modifier = Modifier.width(8.dp))
@@ -156,6 +145,7 @@ fun SettingsScreen(selectedCity: String) {
                         Text(stringResource(R.string.set))
                     }
                 }
+
                 Spacer(modifier = Modifier.height(24.dp))
 
                 // Selected city Section
@@ -166,7 +156,7 @@ fun SettingsScreen(selectedCity: String) {
                     )
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    Text(settingsState.selectedCity)
+                    Text(settingsState.text)
                 }
             }
 

@@ -1,6 +1,5 @@
 package com.droidcon.weatherscope.ui.screens.currentweather
 
-import RotatingSettingsIconAnimation
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,19 +21,15 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -92,7 +87,7 @@ fun CurrentWeatherScreen(onNavigateToSettings: (String) -> Unit = {}) {
 
         val weatherState = (screenState as? DataState.Success)?.state
 
-        Spacer(modifier = Modifier.height(48.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
         Button(
             onClick = { viewModel.getCurrentLocationCoordinates() },
@@ -100,7 +95,42 @@ fun CurrentWeatherScreen(onNavigateToSettings: (String) -> Unit = {}) {
         ) {
             Text(stringResource(R.string.use_current_gps))
         }
-        Spacer(modifier = Modifier.height(36.dp))
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Column {
+            TextField(
+                value = weatherState?.latTextFieldState?.value ?: "",
+                onValueChange = { viewModel.onLocationLatValueChanged(it) },
+                isError = weatherState?.latTextFieldState?.isError ?: false,
+                supportingText = {
+                    Text(text = weatherState?.latTextFieldState?.errorMessage ?: "")
+                },
+                label = { Text(stringResource(R.string.latitude)) },
+                modifier = Modifier.width(480.dp)
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                TextField(
+                    value = weatherState?.lonTextFieldState?.value ?: "",
+                    onValueChange = { viewModel.onLocationLonValueChanged(it) },
+                    isError = weatherState?.lonTextFieldState?.isError ?: false,
+                    supportingText = {
+                        Text(text = weatherState?.lonTextFieldState?.errorMessage ?: "")
+                    },
+                    label = { Text(stringResource(R.string.longitude)) },
+                    modifier = Modifier
+                        .width(480.dp)
+                        .weight(1f)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Button(onClick = { viewModel.setCurrentCityCoordinateLocation() }) {
+                    Text(stringResource(R.string.search))
+                }
+            }
+        }
+        Spacer(modifier = Modifier.height(16.dp))
 
         Row(verticalAlignment = Alignment.CenterVertically) {
             TextField(
@@ -119,7 +149,6 @@ fun CurrentWeatherScreen(onNavigateToSettings: (String) -> Unit = {}) {
             }
         }
 
-        Spacer(modifier = Modifier.height(24.dp))
 
         Row {
             Button(onClick = { onNavigateToSettings(weatherState?.data?.locationName ?: "") }) {
@@ -129,8 +158,7 @@ fun CurrentWeatherScreen(onNavigateToSettings: (String) -> Unit = {}) {
                 Icon(
                     imageVector = Icons.Default.Settings,
                     contentDescription = "Settings Icon",
-                    tint = MaterialTheme.colorScheme.inverseOnSurface,
-                    modifier = Modifier.rotate(RotatingSettingsIconAnimation())
+                    tint = MaterialTheme.colorScheme.inverseOnSurface
                 )
             }
         }

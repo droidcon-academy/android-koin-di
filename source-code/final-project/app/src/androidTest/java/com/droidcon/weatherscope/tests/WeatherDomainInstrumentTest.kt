@@ -39,11 +39,11 @@ class WeatherDomainInstrumentTest: KoinTest {
 
         factory<WeatherDomain> {
             WeatherDomain(object : GetCurrentWeatherUseCase {
-                override fun getCurrentWeather(cityName: String): Flow<DataState<CurrentWeather>> {
+                override  fun getCurrentWeather(cityName: String): Flow<DataState<CurrentWeather>> {
                     return flowOf(DataState.Success(weatherDataStub))
                 }
 
-                override fun getCurrentWeather(
+                override  fun getCurrentWeather(
                     latitude: Double,
                     longitude: Double
                 ): Flow<DataState<CurrentWeather>> {
